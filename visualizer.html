@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Visualization</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            gap: 20px;
+            margin-top: 20px;
+            /* align items to the top so the info panel (pseudocode) sits higher */
+            align-items: flex-start;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            border: 2px solid var(--algorithm-color, #00ffff);
+            box-shadow: 0 0 10px var(--algorithm-color, #00ffff);
+            background-color: #0d0d0d;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #00ffff;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            box-shadow: 0 0 5px #00ffff;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            color: #121212;
+            background-color: #00ffff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button:hover {
+            background-color: #00d2d2;
+            box-shadow: 0 0 15px #00ffff;
+        }
+        button:disabled {
+            background-color: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .info-panel {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* tighten vertical spacing */
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+        .pseudocode-box, .message-box {
+            background-color: #0d0d0d;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 8px #00a6ff;
+            padding: 10px 12px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            color: #e0e0e0;
+        }
+        .pseudocode-box{
+            /* size to content: let pre determine height and remove scrollbar */
+            overflow: visible;
+            display: block;
+            padding: 6px 8px;
+            margin-top: 0; /* ensure it sits up against the top of the panel */
+        }
+        .pseudocode-box pre{
+            display: inline-block;
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'Segoe UI', monospace;
+            font-size: 13px;
+        }
+        .message-box {
+            /* keep message box scrollable for long explanations */
+            height: 180px;
+            overflow-y: auto;
+        }
+        .pseudocode-box:hover{
+            box-shadow: 0 0 20px #ff66cc;
+            border: 2px solid #ff0066;
+        }
+        .info-panel h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #00ffff;
+            border-bottom: 1px solid #00ffff;
+            padding-bottom: 5px;
+        }
+        .back-button {
+            margin-bottom: 20px;
+        }
+        /* search canvas subtle styling */
+        #searchCanvas{ background: #0b0b0b; border: 2px solid rgba(0,255,255,0.06); box-shadow: 0 0 8px rgba(0,255,255,0.03); border-radius:6px }
+    </style>
+
+</head>
+<body>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+        <button class="back-button" onclick="window.location.href='3.html'" style="margin-bottom:0;">← Back to Algorithms</button>
+        <button id="timeBtn" style="padding:8px 14px;border-radius:8px;background:#ffd54f;color:#121212;border:none;cursor:pointer;font-weight:500;box-shadow:0 0 8px #ffd54f;">Time Complexity</button>
+    </div>
+    <div id="timeComplexity" style="display:none;margin:10px 0 0 0;padding:10px 14px;background:#1a1200;border-radius:8px;border:1px solid #ffd54f;color:#fff;max-width:700px;font-size:0.98em;font-family:monospace;"></div>
+    <h1>Algorithm Visualization</h1>
+    <div class="container">
+        <div class="main-content">
+            <canvas id="visualizerCanvas" width="800" height="400"></canvas>
+            <!-- Compact canvas to illustrate search steps (indices, left/mid/right highlights) -->
+            <canvas id="searchCanvas" width="800" height="80" style="display:none;margin-top:12px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);"></canvas>
+            <div class="controls">
+                <div style="position:relative;">
+                    <label for="speed-select">Speed:</label>
+                    <select id="speed-select">
+                        <option value="1000">Slow</option>
+                        <option value="250" selected>Medium</option>
+                        <option value="1">Fast</option>
+                    </select>
+                    <div style="display:inline-block;position:relative;margin-left:8px;">
+                        <button id="customSpeedBtn" style="padding:6px 8px;border-radius:6px;background:#333;color:#e0e0e0;border:1px solid #00ffff;">Custom</button>
+                        <div id="rightSpeedContainer" style="display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:180px;background:#0d0d0d;border:1px solid #00ffff;padding:10px;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.6);z-index:10000;">
+                            <label for="speed-range" style="color:#e0e0e0;margin:0 0 6px 0;font-size:14px;display:block;">Custom Speed</label>
+                            <input id="speed-range" type="range" min="1" max="1000" step="1" value="250" style="width:160px;display:block;margin-bottom:8px;">
+                            <div style="color:#e0e0e0;font-size:13px;">Value: <span id="speed-range-value">250</span> ms</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <label for="target-input" style="margin:0;font-size:14px;color:#e0e0e0">Target:</label>
+                    <input id="target-input" placeholder="e.g. 34" style="padding:8px;border-radius:4px;border:1px solid #00ffff;background:#222;color:#e0e0e0;width:110px">
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <label for="data-input" style="margin:0;font-size:14px;color:#e0e0e0">Data:</label>
+                    <input id="data-input" placeholder="e.g. 5 3 8 2 9" style="padding:8px;border-radius:4px;border:1px solid #00ffff;background:#222;color:#e0e0e0;width:220px">
+                    <button id="setDataBtn" style="padding:8px;border-radius:6px;background:#00d4c4;border:none;color:#031617;cursor:pointer;font-weight:600">Set Data</button>
+                </div>
+                <button id="exampleDataBtn">Example Data</button>
+                <button id="startBtn">Start</button>
+                <button id="pauseBtn" disabled>Pause</button>
+                <button id="stopBtn" disabled>Stop</button>
+            </div>
+        </div>
+        <div class="info-panel">
+            <div class="message-box">
+                <h2>Explanation</h2>
+                <div id="message"></div>
+            </div>
+            <!-- custom speed popover is anchored to the Custom button near the top; no duplicate here -->
+            <div class="pseudocode-box">
+                <h2>Pseudocode</h2>
+                <pre id="pseudocode"></pre>
+            </div>
+            <!-- Current Data readout removed as requested -->
+        </div>
+    </div>
+
+    <script>
+        // Simple explanations for each algorithm
+        const simpleExplanations = {
+            bubbleSort: "Bubble Sort repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. It continues until the list is sorted.",
+            insertionSort: "Insertion Sort builds the sorted array one item at a time by inserting each new element into its correct position among the already sorted elements.",
+            selectionSort: "Selection Sort divides the array into sorted and unsorted parts, repeatedly finding the smallest element from the unsorted part and moving it to the sorted part.",
+            quickSort: "Quick Sort is a divide-and-conquer algorithm that picks a pivot, partitions the array around the pivot, and recursively sorts the partitions.",
+            mergeSort: "Merge Sort splits the array into halves, recursively sorts each half, and then merges the sorted halves back together.",
+            linearSearch: "Linear Search checks each element in the list one by one until it finds the target value or reaches the end.",
+            binarySearch: "Binary Search works on sorted arrays by repeatedly dividing the search interval in half, comparing the middle element to the target, and narrowing the search range until the target is found or not present."
+        };
+
+    let lastConditionDetail = '';
+    const timeBtn = document.getElementById('timeBtn');
+    const timeComplexityEl = document.getElementById('timeComplexity');
+
+    const complexities = {
+        bubbleSort: { best: 'O(n)', avg: 'O(n^2)', worst: 'O(n^2)', space: 'O(1)' },
+        insertionSort: { best: 'O(n)', avg: 'O(n^2)', worst: 'O(n^2)', space: 'O(1)' },
+        selectionSort: { best: 'O(n^2)', avg: 'O(n^2)', worst: 'O(n^2)', space: 'O(1)' },
+        quickSort: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n^2)', space: 'O(log n)' },
+        mergeSort: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)' },
+        linearSearch: { best: 'O(1)', avg: 'O(n)', worst: 'O(n)', space: 'O(1)' },
+        binarySearch: { best: 'O(1)', avg: 'O(log n)', worst: 'O(log n)', space: 'O(1)' }
+    };
+
+    timeBtn.addEventListener('click', ()=>{
+        if (!timeComplexityEl) return;
+        const info = complexities[selectedAlgorithm] || null;
+        if (!info) {
+            timeComplexityEl.textContent = 'No complexity data available.';
+        } else {
+            timeComplexityEl.innerHTML = `<strong>${selectedAlgorithm.replace(/([A-Z])/g,' $1').trim()}</strong><br>Best: ${info.best} &nbsp; Avg: ${info.avg} &nbsp; Worst: ${info.worst} &nbsp; Space: ${info.space}`;
+        }
+        timeComplexityEl.style.display = timeComplexityEl.style.display === 'none' ? 'block' : 'none';
+    });
+        // Get the algorithm from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedAlgorithm = urlParams.get('algorithm') || 'bubbleSort';
+        
+        // Define color schemes for each algorithm
+        const algorithmColors = {
+            bubbleSort: {
+                base: '#FF69B4',    // Hot Pink
+                comparing: '#FF1493' // Deep Pink
+            },
+            insertionSort: {
+                base: '#4CAF50',    // Material Green
+                comparing: '#2E7D32' // Dark Green
+            },
+            selectionSort: {
+                base: '#FFA500',    // Orange
+                comparing: '#FF4500' // Orange Red
+            },
+            quickSort: {
+                base: '#9C27B0',    // Purple
+                comparing: '#6A1B9A' // Dark Purple
+            },
+            mergeSort: {
+                base: '#2196F3',    // Blue
+                comparing: '#1565C0' // Dark Blue
+            }
+        };
+
+        // safe lookup for selected algorithm colors (fallback if missing)
+        const colorsForSelected = algorithmColors[selectedAlgorithm] || { base: '#00ffff', comparing: '#ff0066' };
+        
+        // Update title with algorithm name
+        document.title = `${selectedAlgorithm.replace(/([A-Z])/g, ' $1').trim()} Visualization`;
+        document.querySelector('h1').textContent = `${selectedAlgorithm.replace(/([A-Z])/g, ' $1').trim()} Visualization`;
+        
+    // Set the algorithm color as a CSS variable (safe)
+    document.documentElement.style.setProperty('--algorithm-color', colorsForSelected.base);
+
+        const canvas = document.getElementById('visualizerCanvas');
+        const ctx = canvas.getContext('2d');
+    const speedSelect = document.getElementById('speed-select');
+    const exampleDataBtn = document.getElementById('exampleDataBtn');
+    const speedRange = document.getElementById('speed-range');
+        const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const customSpeedBtn = document.getElementById('customSpeedBtn');
+    const rightSpeedContainer = document.getElementById('rightSpeedContainer');
+        const pseudocodeEl = document.getElementById('pseudocode');
+        const messageEl = document.getElementById('message');
+    let isPaused = false;
+    const searchCanvasEl = document.getElementById('searchCanvas');
+    const targetInputEl = document.getElementById('target-input');
+
+        const NUM_BARS = 50;
+        const BAR_WIDTH = canvas.width / NUM_BARS;
+        let data = [];
+        let originalValues = [];
+        let isSorting = false;
+        let stopSorting = false;
+        
+        const exampleData = [45, 12, 67, 34, 98, 21, 56, 78, 10, 89, 43, 29, 72, 5, 84, 61, 38, 93, 15, 76];
+        let useExampleData = false;
+
+        const pseudocodes = {
+            bubbleSort: `for i = 0 to n-1
+  for j = 0 to n-i-2
+    if array[j] > array[j+1]
+      swap(array[j], array[j+1])`,
+            insertionSort: `for i = 1 to n-1
+  key = array[i]
+  j = i - 1
+  while j >= 0 and array[j] > key
+    array[j+1] = array[j]
+    j = j - 1
+  array[j+1] = key`,
+            selectionSort: `for i = 0 to n-1
+  minIndex = i
+  for j = i+1 to n-1
+    if array[j] < array[minIndex]
+      minIndex = j
+  swap(array[i], array[minIndex])`,
+            quickSort: `quickSort(array, low, high):
+  if low < high:
+    pivot = partition(array, low, high)
+    quickSort(array, low, pivot-1)
+    quickSort(array, pivot+1, high)
+
+partition(array, low, high):
+  pivot = array[high]
+  i = low - 1
+  for j = low to high-1:
+    if array[j] <= pivot:
+      i++
+      swap(array[i], array[j])
+  swap(array[i+1], array[high])
+  return i+1`,
+            mergeSort: `mergeSort(array, left, right):
+  if left < right:
+    mid = (left + right) / 2
+    mergeSort(array, left, mid)
+    mergeSort(array, mid+1, right)
+    merge(array, left, mid, right)
+
+merge(array, left, mid, right):
+  copy left and right halves to temp arrays
+  merge back into main array in sorted order`
+                        ,
+                        linearSearch: `linearSearch(array, target):
+    for i = 0 to n-1:
+        if array[i] == target:
+            return i
+    return -1`,
+                        binarySearch: `binarySearch(array, target):
+    left = 0
+    right = n - 1
+    while left <= right:
+        mid = (left + right) / 2
+        if array[mid] == target:
+            return mid
+        else if array[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1`
+        };
+
+        // Utility to update current data readout and internal arrays
+        const dataInput = document.getElementById('data-input');
+        const setDataBtn = document.getElementById('setDataBtn');
+        const currentDataEl = document.getElementById('currentData');
+
+        function updateCurrentDataReadout() {
+            if (!currentDataEl) return;
+            if (!originalValues || originalValues.length === 0) {
+                currentDataEl.textContent = 'No data set yet.';
+            } else {
+                currentDataEl.textContent = originalValues.join(', ');
+            }
+        }
+
+        function setDataFromInput() {
+            const text = dataInput.value.trim();
+            if (!text) return;
+            // parse numbers separated by space/comma
+            const arr = text.split(/[ ,]+/).map(s => parseFloat(s)).filter(n => !isNaN(n));
+            if (arr.length === 0) return;
+            originalValues = arr.slice();
+            // scale to canvas for bar heights
+            const maxVal = Math.max(...originalValues);
+            data = originalValues.map(val => (val / maxVal) * canvas.height * 0.9 + 1);
+            drawBars();
+            if (searchAlgos.has(selectedAlgorithm)) drawSearchCanvas({});
+            updateCurrentDataReadout();
+        }
+
+        if (setDataBtn) setDataBtn.addEventListener('click', setDataFromInput);
+        updateCurrentDataReadout();
+
+    // Sync top and right speed selectors (two-way)
+    // keep range in sync with top select
+    if (speedSelect) {
+        speedSelect.addEventListener('change', () => { if (speedRange) speedRange.value = speedSelect.value; });
+    }
+
+    // Sync range with selects and support custom range value
+    function setCustomOptionIn(selectEl, val) {
+        // Remove any existing custom option first
+        const existing = selectEl.querySelector('option#customSpeedOption');
+        if (existing) existing.remove();
+        // If val matches a standard option, just set and return
+        if (['1','250','1000'].includes(String(val))) {
+            selectEl.value = String(val);
+            return;
+        }
+        const opt = document.createElement('option');
+        opt.id = 'customSpeedOption';
+        opt.value = String(val);
+        opt.textContent = `Custom (${val}ms)`;
+        selectEl.appendChild(opt);
+        selectEl.value = String(val);
+    }
+
+    if (speedRange) {
+        // initialize range from main select
+        if (speedSelect) speedRange.value = speedSelect.value;
+
+        // when range changes, set top select (with custom option if needed)
+        speedRange.addEventListener('input', () => {
+            const v = String(speedRange.value);
+            if (speedSelect) setCustomOptionIn(speedSelect, v);
+            // update visible ms label if present
+            const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = v;
+        });
+
+        // when top select changes, update range and label
+        if (speedSelect) speedSelect.addEventListener('change', () => { speedRange.value = speedSelect.value; const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = speedSelect.value; });
+    }
+
+    // Custom button toggles right-side speed controls
+    if (customSpeedBtn && rightSpeedContainer) {
+        customSpeedBtn.addEventListener('click', () => {
+            const isHidden = rightSpeedContainer.style.display === 'none' || !rightSpeedContainer.style.display;
+            rightSpeedContainer.style.display = isHidden ? 'flex' : 'none';
+            if (isHidden) {
+                // when showing, sync values
+                if (speedSelect) speedRange.value = speedSelect.value;
+                const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = speedRange.value;
+                // focus the range for quick adjustment
+                setTimeout(() => { if (speedRange) speedRange.focus(); }, 60);
+            }
+        });
+    }
+
+    // Show search UI elements only for search algorithms
+    const searchAlgos = new Set(['linearSearch','binarySearch']);
+    if (searchCanvasEl) searchCanvasEl.style.display = searchAlgos.has(selectedAlgorithm) ? '' : 'none';
+    if (targetInputEl) targetInputEl.style.display = searchAlgos.has(selectedAlgorithm) ? '' : 'none';
+
+        function drawBars(bar1 = -1, bar2 = -1) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const currentNumBars = data.length;
+            const currentBarWidth = canvas.width / currentNumBars;
+            const colors = algorithmColors[selectedAlgorithm];
+            
+            for (let k = 0; k < currentNumBars; k++) {
+                let color = colors.base;
+                if (k === bar1 || k === bar2) {
+                    color = colors.comparing;
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect(k * currentBarWidth, canvas.height - data[k], currentBarWidth - 2, data[k]);
+
+                ctx.fillStyle = '#e0e0e0';
+                ctx.font = '12px Segoe UI';
+                ctx.textAlign = 'center';
+                const numberText = originalValues[k].toString();
+                const xPos = k * currentBarWidth + currentBarWidth / 2;
+                const yPos = canvas.height - data[k] - 5;
+                ctx.fillText(numberText, xPos, yPos);
+            }
+        }
+
+        // Draw compact search visualization (indices, highlights)
+        const searchCanvas = document.getElementById('searchCanvas');
+        const sCtx = searchCanvas ? searchCanvas.getContext('2d') : null;
+        function drawSearchCanvas(highlight = {}){
+            if (!sCtx) return;
+            const arr = originalValues.slice(0, 30); // show up to first 30 elements for clarity
+            const w = searchCanvas.width;
+            const h = searchCanvas.height;
+            sCtx.clearRect(0,0,w,h);
+            const cols = arr.length;
+            const cellW = Math.max(20, Math.floor(w / cols));
+            const pad = 6;
+            sCtx.font = '12px Segoe UI';
+            sCtx.textAlign = 'center';
+
+            for (let i=0;i<cols;i++){
+                const x = i*cellW + cellW/2;
+                const y = h/2;
+                // background
+                let bg = 'rgba(255,255,255,0.03)';
+                if (i === highlight.mid) bg = 'rgba(0,200,255,0.18)';
+                if (i === highlight.left) bg = 'rgba(0,255,100,0.14)';
+                if (i === highlight.right) bg = 'rgba(255,100,0,0.14)';
+                if (i === highlight.checked) bg = 'rgba(255,45,149,0.18)';
+                sCtx.fillStyle = bg;
+                sCtx.fillRect(i*cellW+pad/2, 6, cellW-pad, h-12);
+
+                // value
+                sCtx.fillStyle = '#e0e0e0';
+                sCtx.fillText(String(arr[i]), x, y);
+            }
+            // draw legends
+            sCtx.fillStyle = '#8ff'; sCtx.fillText('mid', w - 120, 14);
+        }
+
+        function initializeData() {
+            if (useExampleData) {
+                originalValues = [...exampleData];
+                const maxVal = Math.max(...exampleData);
+                data = exampleData.map(val => (val / maxVal) * canvas.height * 0.9 + 1);
+            } else {
+                originalValues = [];
+                data = [];
+                for (let k = 0; k < NUM_BARS; k++) {
+                    const value = Math.floor(Math.random() * 350) + 10;
+                    originalValues.push(value);
+                    data.push(value);
+                }
+            }
+            isSorting = false;
+            startBtn.disabled = false;
+            drawBars();
+            if (searchAlgos.has(selectedAlgorithm)) drawSearchCanvas({});
+            updatePseudocode();
+            messageEl.textContent = 'Ready to visualize. Press Start.';
+        }
+
+        async function pause() {
+            const speed = parseInt(speedSelect.value, 10);
+            // wait in small increments so pause can be toggled responsively
+            const step = Math.max(20, Math.floor(speed / 8));
+            let waited = 0;
+            while (waited < speed) {
+                if (stopSorting) break;
+                while (isPaused) {
+                    // while paused, surface the last condition into the message box
+                    try {
+                        if (messageEl) {
+                            messageEl.textContent = lastConditionDetail || 'Paused — waiting at current check...';
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                    await new Promise(r => setTimeout(r, 150));
+                    if (stopSorting) break;
+                }
+                await new Promise(r => setTimeout(r, step));
+                waited += step;
+            }
+        }
+
+        function updateMessage(text) {
+            messageEl.textContent = text;
+        }
+
+        function updatePseudocode() {
+            pseudocodeEl.textContent = pseudocodes[selectedAlgorithm];
+        }
+
+        async function bubbleSort() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+            const currentNumBars = data.length;
+            
+            for (let i = 0; i < currentNumBars && !stopSorting; i++) {
+                updateMessage(`Outer loop: Pass ${i + 1}/${currentNumBars}.`);
+                await pause();
+                for (let j = 0; j < currentNumBars - i - 1 && !stopSorting; j++) {
+                    drawBars(j, j + 1);
+                    const cond = originalValues[j] > originalValues[j + 1];
+                    lastConditionDetail = `Comparing index ${j} (${originalValues[j]}) > index ${j+1} (${originalValues[j+1]}) ? ${cond ? 'true' : 'false'}`;
+                    updateMessage(`Comparing elements at index ${j} (${originalValues[j]}) and ${j + 1} (${originalValues[j + 1]}). Condition (a > b): ${cond ? 'true' : 'false'}.`);
+                    await pause();
+                    
+                    if (data[j] > data[j + 1]) {
+                        [data[j], data[j + 1]] = [data[j + 1], data[j]];
+                        [originalValues[j], originalValues[j + 1]] = [originalValues[j + 1], originalValues[j]];
+                        drawBars(j, j + 1);
+                        updateMessage(`Swapping elements at index ${j} and ${j + 1}.`);
+                        await pause();
+                    }
+                }
+            }
+            
+            isSorting = false;
+            stopBtn.disabled = true;
+            drawBars();
+            updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+        }
+
+        async function insertionSort() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+            const currentNumBars = data.length;
+            
+            for (let i = 1; i < currentNumBars && !stopSorting; i++) {
+                let current = data[i];
+                let currentVal = originalValues[i];
+                let j = i - 1;
+                updateMessage(`Taking element at index ${i} (${currentVal}) as key.`);
+                await pause();
+                
+                while (j >= 0 && data[j] > current && !stopSorting) {
+                    const cond = originalValues[j] > currentVal;
+                    lastConditionDetail = `Is index ${j} value ${originalValues[j]} > key ${currentVal}? ${cond ? 'true' : 'false'}`;
+                    data[j + 1] = data[j];
+                    originalValues[j + 1] = originalValues[j];
+                    j = j - 1;
+                    drawBars(j + 1, i);
+                    updateMessage(`Condition (a > key) is ${cond ? 'true' : 'false'} — shifting element at index ${j + 1} to the right.`);
+                    await pause();
+                }
+                data[j + 1] = current;
+                originalValues[j + 1] = currentVal;
+                drawBars(i, j + 1);
+                await pause();
+            }
+            
+            isSorting = false;
+            stopBtn.disabled = true;
+            drawBars();
+            updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+        }
+
+        async function selectionSort() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+            const currentNumBars = data.length;
+            
+            for (let i = 0; i < currentNumBars && !stopSorting; i++) {
+                let minIndex = i;
+                updateMessage(`Finding minimum element from index ${i} to ${currentNumBars-1}`);
+                await pause();
+                
+                for (let j = i + 1; j < currentNumBars && !stopSorting; j++) {
+                    drawBars(minIndex, j);
+                    const cond = originalValues[j] < originalValues[minIndex];
+                    lastConditionDetail = `Is index ${j} value ${originalValues[j]} < current min index ${minIndex} value ${originalValues[minIndex]}? ${cond ? 'true' : 'false'}`;
+                    updateMessage(`Comparing ${originalValues[j]} with current minimum ${originalValues[minIndex]}. Condition (a < min): ${cond ? 'true' : 'false'}.`);
+                    await pause();
+                    
+                    if (data[j] < data[minIndex]) {
+                        minIndex = j;
+                        drawBars(minIndex, j);
+                        updateMessage(`New minimum found: ${originalValues[minIndex]}`);
+                        await pause();
+                    }
+                }
+                
+                if (minIndex !== i) {
+                    [data[i], data[minIndex]] = [data[minIndex], data[i]];
+                    [originalValues[i], originalValues[minIndex]] = [originalValues[minIndex], originalValues[i]];
+                    drawBars(i, minIndex);
+                    updateMessage(`Swapping ${originalValues[i]} to position ${i}`);
+                    await pause();
+                }
+            }
+            
+            isSorting = false;
+            stopBtn.disabled = true;
+            drawBars();
+            updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+        }
+
+        async function quickSort() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+
+            async function partition(low, high) {
+                const pivot = data[high];
+                const pivotVal = originalValues[high];
+                let i = low - 1;
+                
+                updateMessage(`Partitioning around pivot ${pivotVal}`);
+                await pause();
+                
+                for (let j = low; j < high && !stopSorting; j++) {
+                    drawBars(j, high);
+                    const cond = originalValues[j] <= pivotVal;
+                    lastConditionDetail = `Is index ${j} value ${originalValues[j]} <= pivot ${pivotVal}? ${cond ? 'true' : 'false'}`;
+                    updateMessage(`Comparing ${originalValues[j]} with pivot ${pivotVal}. Condition (a <= pivot): ${cond ? 'true' : 'false'}.`);
+                    await pause();
+                    
+                    if (data[j] <= pivot) {
+                        i++;
+                        [data[i], data[j]] = [data[j], data[i]];
+                        [originalValues[i], originalValues[j]] = [originalValues[j], originalValues[i]];
+                        drawBars(i, j);
+                        updateMessage(`Swapping elements: ${originalValues[i]} and ${originalValues[j]}`);
+                        await pause();
+                    }
+                }
+                
+                [data[i + 1], data[high]] = [data[high], data[i + 1]];
+                [originalValues[i + 1], originalValues[high]] = [originalValues[high], originalValues[i + 1]];
+                drawBars(i + 1, high);
+                await pause();
+                
+                return i + 1;
+            }
+
+            async function quickSortRecursive(low, high) {
+                if (low < high && !stopSorting) {
+                    const pi = await partition(low, high);
+                    await quickSortRecursive(low, pi - 1);
+                    await quickSortRecursive(pi + 1, high);
+                }
+            }
+
+            await quickSortRecursive(0, data.length - 1);
+            
+            isSorting = false;
+            stopBtn.disabled = true;
+            drawBars();
+            updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+        }
+
+        async function mergeSort() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+
+            async function merge(left, mid, right) {
+                const leftArray = data.slice(left, mid + 1);
+                const rightArray = data.slice(mid + 1, right + 1);
+                const leftOriginal = originalValues.slice(left, mid + 1);
+                const rightOriginal = originalValues.slice(mid + 1, right + 1);
+                
+                let i = 0, j = 0, k = left;
+                
+                while (i < leftArray.length && j < rightArray.length && !stopSorting) {
+                    drawBars(left + i, mid + 1 + j);
+                    const cond = leftOriginal[i] <= rightOriginal[j];
+                    lastConditionDetail = `Compare left ${leftOriginal[i]} <= right ${rightOriginal[j]} ? ${cond ? 'true' : 'false'}`;
+                    updateMessage(`Comparing ${leftOriginal[i]} with ${rightOriginal[j]}. Condition (left <= right): ${cond ? 'true' : 'false'}.`);
+                    await pause();
+                    
+                    if (leftArray[i] <= rightArray[j]) {
+                        data[k] = leftArray[i];
+                        originalValues[k] = leftOriginal[i];
+                        i++;
+                    } else {
+                        data[k] = rightArray[j];
+                        originalValues[k] = rightOriginal[j];
+                        j++;
+                    }
+                    drawBars(k);
+                    await pause();
+                    k++;
+                }
+                
+                while (i < leftArray.length && !stopSorting) {
+                    data[k] = leftArray[i];
+                    originalValues[k] = leftOriginal[i];
+                    drawBars(k);
+                    await pause();
+                    i++;
+                    k++;
+                }
+                
+                while (j < rightArray.length && !stopSorting) {
+                    data[k] = rightArray[j];
+                    originalValues[k] = rightOriginal[j];
+                    drawBars(k);
+                    await pause();
+                    j++;
+                    k++;
+                }
+            }
+
+            async function mergeSortRecursive(left, right) {
+                if (left < right && !stopSorting) {
+                    const mid = Math.floor((left + right) / 2);
+                    updateMessage(`Dividing array from index ${left} to ${right}`);
+                    await pause();
+                    
+                    await mergeSortRecursive(left, mid);
+                    await mergeSortRecursive(mid + 1, right);
+                    await merge(left, mid, right);
+                }
+            }
+
+            await mergeSortRecursive(0, data.length - 1);
+            
+            isSorting = false;
+            stopBtn.disabled = true;
+            drawBars();
+            updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+        }
+
+        // Search algorithm visualizers
+        async function linearSearch() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+            const targetRaw = document.getElementById('target-input').value.trim();
+            const target = parseInt(targetRaw, 10);
+            if (isNaN(target)) {
+                updateMessage('Please enter a numeric target to search for.');
+                isSorting = false;
+                stopBtn.disabled = true;
+                return;
+            }
+
+            for (let i = 0; i < originalValues.length && !stopSorting; i++) {
+                drawBars(i, -1);
+                drawSearchCanvas({ checked: i });
+                const cond = originalValues[i] === target;
+                lastConditionDetail = `Check index ${i} value ${originalValues[i]} === target ${target} ? ${cond ? 'true' : 'false'}`;
+                updateMessage(`Checking index ${i}: value ${originalValues[i]}. Equals target? ${cond ? 'true' : 'false'}.`);
+                await pause();
+                if (cond) {
+                    updateMessage(`Target found at index ${i}.`);
+                    break;
+                }
+            }
+
+            if (!stopSorting && !originalValues.includes(target)) updateMessage('Target not found in the array.');
+            isSorting = false;
+            stopBtn.disabled = true;
+        }
+
+        async function binarySearch() {
+            isSorting = true;
+            stopSorting = false;
+            stopBtn.disabled = false;
+            const targetRaw = document.getElementById('target-input').value.trim();
+            const target = parseInt(targetRaw, 10);
+            if (isNaN(target)) {
+                updateMessage('Please enter a numeric target to search for.');
+                isSorting = false;
+                stopBtn.disabled = true;
+                return;
+            }
+
+            // Ensure array is sorted
+            originalValues.sort((a, b) => a - b);
+            const maxVal = Math.max(...originalValues);
+            data = originalValues.map(val => (val / maxVal) * canvas.height * 0.9 + 1);
+            drawBars();
+
+            let left = 0;
+            let right = originalValues.length - 1;
+            while (left <= right && !stopSorting) {
+                const mid = Math.floor((left + right) / 2);
+                drawBars(mid, left);
+                drawSearchCanvas({ left: left, mid: mid, right: right });
+                const val = originalValues[mid];
+                const eq = val === target;
+                const lt = val < target;
+                lastConditionDetail = `Mid index ${mid} value ${val} === target ${target}? ${eq ? 'true' : 'false'}; Less than target? ${lt ? 'true' : 'false'}`;
+                updateMessage(`Left=${left}, Right=${right}, Mid=${mid} (value=${val}). Equal? ${eq ? 'true' : 'false'}, Less than target? ${lt ? 'true' : 'false'}.`);
+                await pause();
+                if (eq) {
+                    updateMessage(`Target found at index ${mid}.`);
+                    break;
+                } else if (lt) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            if (!stopSorting && !originalValues.includes(target)) updateMessage('Target not found in the array.');
+            isSorting = false;
+            stopBtn.disabled = true;
+        }
+
+        startBtn.addEventListener('click', async () => {
+            if (isSorting) return;
+            
+            startBtn.disabled = true;
+            exampleDataBtn.disabled = true;
+            pauseBtn.disabled = false;
+            pauseBtn.textContent = 'Pause';
+            isPaused = false;
+            
+            if (selectedAlgorithm === 'bubbleSort') {
+                await bubbleSort();
+            } else if (selectedAlgorithm === 'insertionSort') {
+                await insertionSort();
+            } else if (selectedAlgorithm === 'selectionSort') {
+                await selectionSort();
+            } else if (selectedAlgorithm === 'quickSort') {
+                await quickSort();
+            } else if (selectedAlgorithm === 'mergeSort') {
+                await mergeSort();
+            } else if (selectedAlgorithm === 'linearSearch') {
+                await linearSearch();
+            } else if (selectedAlgorithm === 'binarySearch') {
+                await binarySearch();
+            } else {
+                // Fallback to bubble sort if algorithm is not recognized
+                await bubbleSort();
+            }
+            
+            startBtn.disabled = false;
+            exampleDataBtn.disabled = false;
+            pauseBtn.disabled = true;
+        });
+
+        pauseBtn.addEventListener('click', ()=>{
+            if (!isSorting) return;
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+            updateMessage(isPaused ? 'Paused' : 'Resuming...');
+        });
+
+        stopBtn.addEventListener('click', () => {
+            if (isSorting) {
+                stopSorting = true;
+                updateMessage("Stopping the sorting process...");
+                // reset pause state
+                isPaused = false;
+                if (pauseBtn) { pauseBtn.textContent = 'Pause'; pauseBtn.disabled = true; }
+            }
+        });
+
+        exampleDataBtn.addEventListener('click', () => {
+            if (!isSorting) {
+                useExampleData = true;
+                initializeData();
+            }
+        });
+
+        window.onload = initializeData;
+    </script>
+</body>
+</html>

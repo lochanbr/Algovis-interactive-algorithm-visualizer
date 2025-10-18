@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainware🧠 Algorithms</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+            margin-bottom: 40px;
+        }
+        .algorithm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+        .algorithm-card {
+            background-color: #1e1e1e;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+        }
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .algorithm-name {
+            font-size: 1.5em;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        .algorithm-description {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        a {
+            text-decoration: none;
+        }
+        .category-bar{
+            display:flex;
+            gap:12px;
+            margin-bottom:18px;
+            align-items:center;
+        }
+        .category-btn{
+            padding:8px 14px;
+            border-radius:8px;
+            background:#222;
+            color:#e0e0e0;
+            border:1px solid #00b8c4;
+            cursor:pointer;
+            box-shadow:0 0 8px rgba(0,184,196,0.06);
+        }
+        .category-btn.active{ background:#00ffff;color:#121212;box-shadow:0 0 14px rgba(0,255,255,0.16); }
+    </style>
+
+
+</head>
+<body>
+    <h1>Brainware🧠 Algorithms</h1>
+    <div class="category-bar" role="tablist" aria-label="Algorithm categories">
+        <button class="category-btn active" data-category="all">All</button>
+        <button class="category-btn" data-category="sorting">Sorting</button>
+        <button class="category-btn" data-category="search">Search</button>
+    </div>
+
+    <div class="algorithm-grid">
+        <a href="visualizer.html?algorithm=bubbleSort" data-category="sorting">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Bubble Sort</div>
+                <div class="algorithm-description">
+                    A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.
+                </div>
+                
+            </div>
+        </a>
+        
+        <a href="visualizer.html?algorithm=insertionSort" data-category="sorting">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Insertion Sort</div>
+                <div class="algorithm-description">
+                    Builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array.
+                </div>
+                
+            </div>
+        </a>
+        
+        <a href="visualizer.html?algorithm=selectionSort" data-category="sorting">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Selection Sort</div>
+                <div class="algorithm-description">
+                    Divides the array into a sorted and unsorted region, repeatedly selecting the smallest element from the unsorted region.
+                </div>
+                
+            </div>
+        </a>
+        
+        <a href="visualizer.html?algorithm=quickSort" data-category="sorting">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Quick Sort</div>
+                <div class="algorithm-description">
+                    An efficient sorting algorithm using divide-and-conquer strategy. Picks a 'pivot' element and partitions the array around it.
+                </div>
+                
+            </div>
+        </a>
+        
+        <a href="visualizer.html?algorithm=mergeSort" data-category="sorting">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Merge Sort</div>
+                <div class="algorithm-description">
+                    A divide-and-conquer algorithm that recursively breaks down the array into smaller subarrays, sorts them, and merges them back together.
+                </div>
+                
+            </div>
+        </a>
+        
+        <a href="visualizer.html?algorithm=linearSearch" data-category="search">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Linear Search</div>
+                <div class="algorithm-description">
+                    Searches each element in sequence until the target is found. Visualization will highlight elements as they are compared.
+                </div>
+            </div>
+        </a>
+
+        <a href="visualizer.html?algorithm=binarySearch" data-category="search">
+            <div class="algorithm-card">
+                <div class="algorithm-name">Binary Search</div>
+                <div class="algorithm-description">
+                    Efficient search on sorted arrays using divide-and-conquer. Visualization will show mid selection and narrowing range.
+                </div>
+            </div>
+        </a>
+    </div>
+    <!-- Landing page — visualization logic moved to visualizer.html -->
+</body>
+<script>
+</script>
+<script>
+// Category filter for landing page
+(function(){
+    const buttons = Array.from(document.querySelectorAll('.category-btn'));
+    const cards = Array.from(document.querySelectorAll('.algorithm-grid a'));
+
+    function setCategory(cat){
+        buttons.forEach(b=> b.classList.toggle('active', b.dataset.category === cat));
+        cards.forEach(a=>{
+            const cardCat = a.dataset.category || 'sorting';
+            if (cat === 'all' || cardCat === cat) {
+                a.style.display = '';
+            } else {
+                a.style.display = 'none';
+            }
+        });
+    }
+
+    buttons.forEach(b => b.addEventListener('click', ()=> setCategory(b.dataset.category)));
+    // initial state
+    setCategory('all');
+})();
+</script>
+</html>

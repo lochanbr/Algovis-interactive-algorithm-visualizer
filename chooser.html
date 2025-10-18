@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Choose Category</title>
+<style>
+  body{font-family:Segoe UI,Arial,sans-serif;background:#0f0f12;color:#e6f9fb;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+  .panel{background:#0b0b0d;border:1px solid #0ff;padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(0,255,255,0.06);width:420px}
+  h1{color:#00f5ff;margin-top:0}
+  .row{display:flex;gap:12px;margin:12px 0}
+  .big-btn{flex:1;padding:12px;border-radius:8px;background:#071516;border:1px solid #00d7e6;color:#cff;cursor:pointer;font-weight:600}
+  .big-btn.active{background:#00d7e6;color:#041516}
+  .options{margin-top:12px;display:none;flex-direction:column;gap:8px}
+  .alg-btn{padding:10px;border-radius:8px;background:#021418;border:1px solid #00b4c4;color:#dff;cursor:pointer;text-align:left}
+  .back{display:block;margin-top:12px;color:#00f5ff;text-decoration:none}
+  /* pop-in animation for option buttons */
+  .alg-btn{opacity:0;transform:translateY(8px)}
+  .options.show .alg-btn{opacity:1;transform:none}
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Choose Type</h1>
+    <div class="row">
+      <button id="btn-sorting" class="big-btn">Sorting</button>
+      <button id="btn-search" class="big-btn">Search</button>
+    </div>
+
+    <div id="sorting-options" class="options">
+      <button class="alg-btn" data-target="bubbleSort">Bubble Sort</button>
+      <button class="alg-btn" data-target="insertionSort">Insertion Sort</button>
+      <button class="alg-btn" data-target="selectionSort">Selection Sort</button>
+      <button class="alg-btn" data-target="quickSort">Quick Sort</button>
+      <button class="alg-btn" data-target="mergeSort">Merge Sort</button>
+    </div>
+
+    <div id="search-options" class="options">
+      <button class="alg-btn" data-target="linearSearch">Linear Search</button>
+      <button class="alg-btn" data-target="binarySearch">Binary Search</button>
+    </div>
+
+    <a class="back" href="3.html">← Back to full list</a>
+  </div>
+
+<script>
+  const btnSorting = document.getElementById('btn-sorting');
+  const btnSearch = document.getElementById('btn-search');
+  const sortingOptions = document.getElementById('sorting-options');
+  const searchOptions = document.getElementById('search-options');
+
+  function clearActive(){ btnSorting.classList.remove('active'); btnSearch.classList.remove('active'); sortingOptions.style.display='none'; searchOptions.style.display='none'; }
+
+  btnSorting.addEventListener('click', ()=>{
+    const show = sortingOptions.style.display !== 'flex';
+    clearActive();
+    if (show){
+      btnSorting.classList.add('active');
+      sortingOptions.style.display='flex';
+      sortingOptions.classList.add('show');
+      Array.from(sortingOptions.querySelectorAll('.alg-btn')).forEach((b,i)=>{ b.style.animation = `popIn 220ms ease ${(i*80)}ms both`; });
+    } else {
+      sortingOptions.classList.remove('show');
+      Array.from(sortingOptions.querySelectorAll('.alg-btn')).forEach(b=>{ b.style.animation = ''; });
+    }
+  });
+
+  btnSearch.addEventListener('click', ()=>{
+    const show = searchOptions.style.display !== 'flex';
+    clearActive();
+    if (show){
+      btnSearch.classList.add('active');
+      searchOptions.style.display='flex';
+      searchOptions.classList.add('show');
+      Array.from(searchOptions.querySelectorAll('.alg-btn')).forEach((b,i)=>{ b.style.animation = `popIn 220ms ease ${(i*80)}ms both`; });
+    } else {
+      searchOptions.classList.remove('show');
+      Array.from(searchOptions.querySelectorAll('.alg-btn')).forEach(b=>{ b.style.animation = ''; });
+    }
+  });
+
+  document.querySelectorAll('.alg-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const target = b.dataset.target;
+      window.location.href = `visualizer.html?algorithm=${target}`;
+    });
+  });
+</script>
+</body>
+</html>
