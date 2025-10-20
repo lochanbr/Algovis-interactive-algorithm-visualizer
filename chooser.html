@@ -30,6 +30,9 @@
       <button id="btn-sorting" class="big-btn">Sorting</button>
       <button id="btn-search" class="big-btn">Search</button>
     </div>
+    <div class="row">
+      <button id="btn-datamanipulation" class="big-btn">Data Manipulation</button>
+    </div>
 
     <div id="sorting-options" class="options">
       <button class="alg-btn" data-target="bubbleSort">Bubble Sort</button>
@@ -44,16 +47,32 @@
       <button class="alg-btn" data-target="binarySearch">Binary Search</button>
     </div>
 
+    <div id="datamanipulation-options" class="options">
+      <button class="alg-btn" data-target="insertMethod">Insert Method</button>
+      <button class="alg-btn" data-target="deleteMethod">Delete Method</button>
+      <button class="alg-btn" data-target="treeDfs">Tree DFS Traversal</button>
+      <button class="alg-btn" data-target="treeBfs">Tree BFS Traversal</button>
+    </div>
+
     <a class="back" href="3.html">← Back to full list</a>
   </div>
 
 <script>
   const btnSorting = document.getElementById('btn-sorting');
   const btnSearch = document.getElementById('btn-search');
+  const btnDataManipulation = document.getElementById('btn-datamanipulation');
   const sortingOptions = document.getElementById('sorting-options');
   const searchOptions = document.getElementById('search-options');
+  const dataManipulationOptions = document.getElementById('datamanipulation-options');
 
-  function clearActive(){ btnSorting.classList.remove('active'); btnSearch.classList.remove('active'); sortingOptions.style.display='none'; searchOptions.style.display='none'; }
+  function clearActive(){ 
+    btnSorting.classList.remove('active'); 
+    btnSearch.classList.remove('active'); 
+    btnDataManipulation.classList.remove('active');
+    sortingOptions.style.display='none'; 
+    searchOptions.style.display='none'; 
+    dataManipulationOptions.style.display='none'; 
+  }
 
   btnSorting.addEventListener('click', ()=>{
     const show = sortingOptions.style.display !== 'flex';
@@ -80,6 +99,20 @@
     } else {
       searchOptions.classList.remove('show');
       Array.from(searchOptions.querySelectorAll('.alg-btn')).forEach(b=>{ b.style.animation = ''; });
+    }
+  });
+
+  btnDataManipulation.addEventListener('click', ()=>{
+    const show = dataManipulationOptions.style.display !== 'flex';
+    clearActive();
+    if (show){
+      btnDataManipulation.classList.add('active');
+      dataManipulationOptions.style.display='flex';
+      dataManipulationOptions.classList.add('show');
+      Array.from(dataManipulationOptions.querySelectorAll('.alg-btn')).forEach((b,i)=>{ b.style.animation = `popIn 220ms ease ${(i*80)}ms both`; });
+    } else {
+      dataManipulationOptions.classList.remove('show');
+      Array.from(dataManipulationOptions.querySelectorAll('.alg-btn')).forEach(b=>{ b.style.animation = ''; });
     }
   });
 
