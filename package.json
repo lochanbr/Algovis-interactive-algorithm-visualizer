@@ -1,0 +1,24 @@
+{
+  "name": "team-brainware",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server . -p 5173 -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer/issues"
+  },
+  "homepage": "https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

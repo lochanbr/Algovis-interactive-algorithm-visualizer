@@ -15,6 +15,19 @@
             margin: 0;
             padding: 20px;
         }
+        .logo {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            z-index: 1000;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+        .logo:hover {
+            opacity: 1;
+        }
         h1 {
             color: #00ffff;
             text-shadow: 0 0 5px #00ffff;
@@ -189,55 +202,13 @@
             color: #b0b0b0;
             font-family: monospace;
         }
-        body { cursor: none; }
-        .neon-cursor {
-            position: fixed;
-            top: 0; left: 0;
-            width: 18px; height: 18px;
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(35% 35% at 40% 40%, rgba(0,255,255,0.9) 0%, rgba(0,170,255,0.75) 45%, rgba(0,120,255,0.35) 70%, rgba(0,200,255,0.0) 100%);
-            box-shadow:
-                0 0 12px rgba(0,255,255,0.55),
-                0 0 24px rgba(0,200,255,0.35),
-                0 0 36px rgba(0,170,255,0.25);
-            mix-blend-mode: screen;
-            filter: saturate(1.2) blur(0.2px);
-            z-index: 9999;
-        }
-        .neon-cursor--hover {
-            width: 24px; height: 24px;
-            box-shadow:
-                0 0 16px rgba(0,255,255,0.7),
-                0 0 32px rgba(0,200,255,0.45),
-                0 0 48px rgba(0,170,255,0.35);
-        }
-        .ripple {
-            position: fixed;
-            top: 0; left: 0;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            pointer-events: none;
-            border: 2px solid rgba(0,255,255,0.7);
-            box-shadow:
-                0 0 10px rgba(0,255,255,0.6),
-                0 0 18px rgba(0,200,255,0.35);
-            mix-blend-mode: screen;
-            transform: translate(-50%, -50%) scale(1);
-            animation: ripple 700ms ease-out forwards;
-            z-index: 9998;
-        }
-        @keyframes ripple {
-            0%   { opacity: 0.9; transform: translate(-50%, -50%) scale(1);   filter: blur(0px); }
-            60%  { opacity: 0.35; transform: translate(-50%, -50%) scale(4.2); filter: blur(0.8px); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(6.4);   filter: blur(1px); }
-        }
+        
     </style>
 
 
 </head>
 <body>
+    <img src="brainware-logo.png" alt="Brain Ware Logo" class="logo">
     <h1>Brainware🧠 Algorithms</h1>
     <div class="category-bar" role="tablist" aria-label="Algorithm categories">
         <button class="category-btn active" data-category="all">All</button>
@@ -375,65 +346,8 @@
         </div>
     </div>
 
-    <!-- Landing page — visualization logic moved to visualizer.html -->
-    <div id="neon-cursor" class="neon-cursor" aria-hidden="true"></div>
+    
 </body>
-<script>
-(function(){
-    const cursor = document.getElementById('neon-cursor');
-    if (!cursor) return;
-
-    let targetX = window.innerWidth / 2, targetY = window.innerHeight / 2;
-    let x = targetX, y = targetY;
-    const ease = 0.18;
-
-    let lastRippleTime = 0;
-    const rippleInterval = 90;
-
-    function animate(){
-        x += (targetX - x) * ease;
-        y += (targetY - y) * ease;
-        cursor.style.transform = `translate(${x}px, ${y}px)`;
-        requestAnimationFrame(animate);
-    }
-
-    function spawnRipple(px, py){
-        const r = document.createElement('div');
-        r.className = 'ripple';
-        r.style.left = px + 'px';
-        r.style.top  = py + 'px';
-        document.body.appendChild(r);
-        r.addEventListener('animationend', ()=> r.remove());
-    }
-
-    function isInteractive(el){
-        return !!el && !!el.closest('a, button, .algorithm-card, [role="button"], [data-interactive]');
-    }
-
-    window.addEventListener('mousemove', (e)=>{
-        targetX = e.clientX; targetY = e.clientY;
-        const now = performance.now();
-        if (now - lastRippleTime > rippleInterval){
-            spawnRipple(targetX, targetY);
-            lastRippleTime = now;
-        }
-        cursor.classList.toggle('neon-cursor--hover', isInteractive(e.target));
-    }, { passive: true });
-
-    window.addEventListener('mousedown', (e)=>{
-        spawnRipple(e.clientX, e.clientY);
-    });
-
-    window.addEventListener('mouseleave', ()=>{
-        cursor.style.opacity = '0';
-    });
-    window.addEventListener('mouseenter', ()=>{
-        cursor.style.opacity = '1';
-    });
-
-    animate();
-})();
-</script>
 <script>
 // Category filter for landing page
 (function(){

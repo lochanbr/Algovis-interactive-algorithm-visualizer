@@ -107,7 +107,7 @@
             box-shadow: none;
         }
         .info-panel {
-            width: 300px;
+            width: 360px;
             display: flex;
             flex-direction: column;
             gap: 12px; /* tighten vertical spacing */
@@ -139,9 +139,80 @@
             font-size: 13px;
         }
         .message-box {
-            /* keep message box scrollable for long explanations */
-            height: 180px;
-            overflow-y: auto;
+            /* let the explanation fit fully without scrolling */
+            height: auto;
+            max-height: none;
+            overflow: visible;
+        }
+        .complexity-box {
+            background-color: #0d0d0d;
+            border: 2px solid #9C27B0;
+            box-shadow: 0 0 8px #9C27B0;
+            border-radius: 8px;
+            padding: 12px;
+            color: #e0e0e0;
+            font-size: 13px;
+            line-height: 1.4;
+            display: none;
+        }
+        .complexity-box h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #9C27B0;
+            border-bottom: 1px solid #9C27B0;
+            padding-bottom: 6px;
+        }
+        .complexity-item {
+            margin: 8px 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+        }
+        .complexity-label {
+            font-weight: 500;
+            min-width: 80px;
+        }
+        .complexity-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: help;
+        }
+        .complexity-good { background: #1B5E20; color: #4CAF50; }
+        .complexity-moderate { background: #E65100; color: #FF9800; }
+        .complexity-poor { background: #B71C1C; color: #F44336; }
+        .complexity-tooltip {
+            position: relative;
+        }
+        .complexity-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .logo {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            z-index: 1000;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+        .logo:hover {
+            opacity: 1;
         }
         .pseudocode-box:hover{
             box-shadow: 0 0 20px #ff66cc;
@@ -159,23 +230,30 @@
         }
         /* search canvas subtle styling */
         #searchCanvas{ background: #0b0b0b; border: 2px solid rgba(0,255,255,0.06); box-shadow: 0 0 8px rgba(0,255,255,0.03); border-radius:6px }
+        
+        
     </style>
+
+
 
 </head>
 <body>
+    <img src="brainware-logo.png" alt="Brain Ware Logo" class="logo">
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
         <button class="back-button" onclick="window.location.href='3.html'" style="margin-bottom:0;">← Back to Algorithms</button>
-        <button id="timeBtn" style="padding:8px 14px;border-radius:8px;background:#ffd54f;color:#121212;border:none;cursor:pointer;font-weight:500;box-shadow:0 0 8px #ffd54f;">Time Complexity</button>
     </div>
-    <div id="timeComplexity" style="display:none;margin:10px 0 0 0;padding:10px 14px;background:#1a1200;border-radius:8px;border:1px solid #ffd54f;color:#fff;max-width:700px;font-size:0.98em;font-family:monospace;"></div>
+
+    
+
     <h1>Algorithm Visualization</h1>
     <div class="container">
+
         <div class="explanation-sidebar">
             <button class="explanation-btn" onclick="showAlgorithmExplanation()">
                 📖 Algorithm Explanation
             </button>
-            <button class="explanation-btn" onclick="showComplexityInfo()">
-                ⏱️ Time Complexity
+            <button class="explanation-btn" onclick="toggleComplexityInfo()">
+                ⏱️ Complexity Info
             </button>
             <button class="explanation-btn" onclick="showHowItWorks()">
                 🔧 How It Works
@@ -203,18 +281,27 @@
                     </select>
                     <div style="display:inline-block;position:relative;margin-left:8px;">
                         <button id="customSpeedBtn" style="padding:6px 8px;border-radius:6px;background:#333;color:#e0e0e0;border:1px solid #00ffff;">Custom</button>
-                        <div id="rightSpeedContainer" style="display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:180px;background:#0d0d0d;border:1px solid #00ffff;padding:10px;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.6);z-index:10000;">
-                            <label for="speed-range" style="color:#e0e0e0;margin:0 0 6px 0;font-size:14px;display:block;">Custom Speed</label>
-                            <input id="speed-range" type="range" min="1" max="1000" step="1" value="250" style="width:160px;display:block;margin-bottom:8px;">
-                            <div style="color:#e0e0e0;font-size:13px;">Value: <span id="speed-range-value">250</span> ms</div>
+                        <div id="rightSpeedContainer" style="display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:220px;background:#0d0d0d;border:1px solid #00ffff;padding:12px;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,0.6);z-index:10000;">
+                            
+                            
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <button id="speed-minus" title="-10 ms" style="padding:4px 8px;border-radius:6px;background:#222;color:#e0e0e0;border:1px solid #00ffff;">-10</button>
+                                <input id="speed-number" type="number" min="1" max="1000" step="1" value="250" style="width:80px;padding:6px;border-radius:6px;border:1px solid #00ffff;background:#111;color:#e0e0e0;">
+                                <button id="speed-plus" title="+10 ms" style="padding:4px 8px;border-radius:6px;background:#222;color:#e0e0e0;border:1px solid #00ffff;">+10</button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div style="display:flex;align-items:center;gap:8px;">
+                
+                <div id="data-input-row" style="display:flex;align-items:center;gap:8px;">
                     <label for="data-input" style="margin:0;font-size:14px;color:#e0e0e0">Data:</label>
                     <input id="data-input" placeholder="e.g. 5 3 8 2 9" style="padding:8px;border-radius:4px;border:1px solid #00ffff;background:#222;color:#e0e0e0;width:220px">
                     <button id="setDataBtn" style="padding:8px;border-radius:6px;background:#00d4c4;border:none;color:#031617;cursor:pointer;font-weight:600">Set Data</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <label for="target-input" style="margin:0;font-size:14px;color:#e0e0e0">Target:</label>
+                    <input id="target-input" placeholder="number to search" style="padding:8px;border-radius:4px;border:1px solid #00ffff;background:#222;color:#e0e0e0;width:160px">
                 </div>
                 <button id="exampleDataBtn">Example Data</button>
                 <button id="startBtn">Start</button>
@@ -225,7 +312,11 @@
         <div class="info-panel">
             <div class="message-box">
                 <h2>Explanation</h2>
-                <div id="message"></div>
+                <div id="message">Ready to visualize. Press Start.</div>
+            </div>
+            <div class="complexity-box" id="complexityBox">
+                <h2>Time & Space Complexity</h2>
+                <div id="complexityContent"></div>
             </div>
             <!-- custom speed popover is anchored to the Custom button near the top; no duplicate here -->
             <div class="pseudocode-box">
@@ -254,34 +345,6 @@
         };
 
     let lastConditionDetail = '';
-    const timeBtn = document.getElementById('timeBtn');
-    const timeComplexityEl = document.getElementById('timeComplexity');
-
-    const complexities = {
-        bubbleSort: { best: 'O(n)', avg: 'O(n^2)', worst: 'O(n^2)', space: 'O(1)' },
-        insertionSort: { best: 'O(n)', avg: 'O(n^2)', worst: 'O(n^2)', space: 'O(1)' },
-        selectionSort: { best: 'O(n^2)', avg: 'O(n^2)', worst: 'O(n^2)', space: 'O(1)' },
-        quickSort: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n^2)', space: 'O(log n)' },
-        mergeSort: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)' },
-        linearSearch: { best: 'O(1)', avg: 'O(n)', worst: 'O(n)', space: 'O(1)' },
-        binarySearch: { best: 'O(1)', avg: 'O(log n)', worst: 'O(log n)', space: 'O(1)' },
-        insertMethod: { best: 'O(1)', avg: 'O(n)', worst: 'O(n)', space: 'O(1)' },
-        deleteMethod: { best: 'O(1)', avg: 'O(n)', worst: 'O(n)', space: 'O(1)' },
-        // DFS and BFS complexity information removed
-        treeDfs: { best: 'O(n)', avg: 'O(n)', worst: 'O(n)', space: 'O(h)' },
-        treeBfs: { best: 'O(n)', avg: 'O(n)', worst: 'O(n)', space: 'O(w)' }
-    };
-
-    timeBtn.addEventListener('click', ()=>{
-        if (!timeComplexityEl) return;
-        const info = complexities[selectedAlgorithm] || null;
-        if (!info) {
-            timeComplexityEl.textContent = 'No complexity data available.';
-        } else {
-            timeComplexityEl.innerHTML = `<strong>${selectedAlgorithm.replace(/([A-Z])/g,' $1').trim()}</strong><br>Best: ${info.best} &nbsp; Avg: ${info.avg} &nbsp; Worst: ${info.worst} &nbsp; Space: ${info.space}`;
-        }
-        timeComplexityEl.style.display = timeComplexityEl.style.display === 'none' ? 'block' : 'none';
-    });
         // Get the algorithm from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const selectedAlgorithm = urlParams.get('algorithm') || 'bubbleSort';
@@ -325,6 +388,11 @@
     const speedSelect = document.getElementById('speed-select');
     const exampleDataBtn = document.getElementById('exampleDataBtn');
     const speedRange = document.getElementById('speed-range');
+    const speedNumber = document.getElementById('speed-number');
+    const speedMinus = document.getElementById('speed-minus');
+    const speedPlus = document.getElementById('speed-plus');
+    const speedValueLabel = document.getElementById('speed-range-value');
+    const speedOpsLabel = document.getElementById('speed-ops');
         const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -506,12 +574,8 @@ merge(array, left, mid, right):
         if (setDataBtn) setDataBtn.addEventListener('click', setDataFromInput);
         updateCurrentDataReadout();
 
-    // Sync top and right speed selectors (two-way)
+    // Sync top and right speed selectors (two-way) and advanced inputs
     // keep range in sync with top select
-    if (speedSelect) {
-        speedSelect.addEventListener('change', () => { if (speedRange) speedRange.value = speedSelect.value; });
-    }
-
     // Sync range with selects and support custom range value
     function setCustomOptionIn(selectEl, val) {
         // Remove any existing custom option first
@@ -530,20 +594,71 @@ merge(array, left, mid, right):
         selectEl.value = String(val);
     }
 
-    if (speedRange) {
-        // initialize range from main select
-        if (speedSelect) speedRange.value = speedSelect.value;
+    function clampSpeed(v){
+        const n = Math.max(1, Math.min(1000, parseInt(v, 10) || 250));
+        return n;
+    }
 
-        // when range changes, set top select (with custom option if needed)
-        speedRange.addEventListener('input', () => {
-            const v = String(speedRange.value);
-            if (speedSelect) setCustomOptionIn(speedSelect, v);
-            // update visible ms label if present
-            const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = v;
+    function updateSpeedLabels(v){
+        if (speedValueLabel) speedValueLabel.textContent = String(v);
+        // ops per second ~ 1000/v, rounded to integer
+        if (speedOpsLabel) {
+            const ops = Math.max(1, Math.round(1000 / v));
+            speedOpsLabel.textContent = String(ops);
+        }
+    }
+
+    function applySpeed(v, persist = true){
+        const val = clampSpeed(v);
+        if (speedSelect) setCustomOptionIn(speedSelect, String(val));
+        if (speedRange) speedRange.value = String(val);
+        if (speedNumber) speedNumber.value = String(val);
+        updateSpeedLabels(val);
+        if (persist) try { localStorage.setItem('algoViz_speed_ms', String(val)); } catch (e) {}
+    }
+
+    // initialize controls from persisted value or current select
+    (function initSpeed(){
+        let initial = 250;
+        try { const saved = localStorage.getItem('algoViz_speed_ms'); if (saved) initial = clampSpeed(saved); } catch (e) {}
+        if (speedSelect) {
+            // if no saved, use current select value
+            if (!localStorage.getItem('algoViz_speed_ms')) initial = clampSpeed(speedSelect.value);
+        }
+        applySpeed(initial, false);
+    })();
+
+    // Listeners
+    if (speedSelect) {
+        speedSelect.addEventListener('change', () => {
+            applySpeed(speedSelect.value);
         });
+    }
 
-        // when top select changes, update range and label
-        if (speedSelect) speedSelect.addEventListener('change', () => { speedRange.value = speedSelect.value; const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = speedSelect.value; });
+    if (speedRange) {
+        speedRange.addEventListener('input', () => {
+            applySpeed(speedRange.value);
+        });
+    }
+
+    if (speedNumber) {
+        speedNumber.addEventListener('input', () => {
+            applySpeed(speedNumber.value);
+        });
+    }
+
+    if (speedMinus) {
+        speedMinus.addEventListener('click', () => {
+            const current = clampSpeed(speedNumber ? speedNumber.value : (speedRange ? speedRange.value : 250));
+            applySpeed(current - 10);
+        });
+    }
+
+    if (speedPlus) {
+        speedPlus.addEventListener('click', () => {
+            const current = clampSpeed(speedNumber ? speedNumber.value : (speedRange ? speedRange.value : 250));
+            applySpeed(current + 10);
+        });
     }
 
     // Custom button toggles right-side speed controls
@@ -552,11 +667,12 @@ merge(array, left, mid, right):
             const isHidden = rightSpeedContainer.style.display === 'none' || !rightSpeedContainer.style.display;
             rightSpeedContainer.style.display = isHidden ? 'flex' : 'none';
             if (isHidden) {
-                // when showing, sync values
-                if (speedSelect) speedRange.value = speedSelect.value;
-                const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = speedRange.value;
-                // focus the range for quick adjustment
-                setTimeout(() => { if (speedRange) speedRange.focus(); }, 60);
+                // when showing, sync labels to current value
+                const current = (speedNumber && speedNumber.value) ? speedNumber.value : (speedSelect ? speedSelect.value : '250');
+                const lbl = document.getElementById('speed-range-value'); if (lbl) lbl.textContent = String(current);
+                updateSpeedLabels(clampSpeed(current));
+                // focus input for quick adjustment
+                setTimeout(() => { if (speedNumber) speedNumber.focus(); }, 60);
             }
         });
     }
@@ -567,17 +683,26 @@ merge(array, left, mid, right):
     const treeAlgos = new Set(['treeDfs','treeBfs']);
     const gridCanvasEl = document.getElementById('gridCanvas');
     const treeCanvasEl = document.getElementById('treeCanvas');
+    const mainCanvasEl = document.getElementById('visualizerCanvas');
+    const dataInputRowEl = document.getElementById('data-input-row');
+    const targetLabelEl = document.querySelector('label[for="target-input"]');
     
     if (searchCanvasEl) searchCanvasEl.style.display = searchAlgos.has(selectedAlgorithm) ? '' : 'none';
     if (targetInputEl) targetInputEl.style.display = searchAlgos.has(selectedAlgorithm) ? '' : 'none';
     if (gridCanvasEl) gridCanvasEl.style.display = pathfindingAlgos.has(selectedAlgorithm) ? '' : 'none';
     if (treeCanvasEl) treeCanvasEl.style.display = treeAlgos.has(selectedAlgorithm) ? '' : 'none';
+    if (mainCanvasEl) mainCanvasEl.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
+    if (dataInputRowEl) dataInputRowEl.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
+    if (targetLabelEl) targetLabelEl.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
+    if (exampleDataBtn) exampleDataBtn.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
+
+    
 
         function drawBars(bar1 = -1, bar2 = -1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const currentNumBars = data.length;
             const currentBarWidth = canvas.width / currentNumBars;
-            const colors = algorithmColors[selectedAlgorithm];
+            const colors = algorithmColors[selectedAlgorithm] || { base: '#e0e0e0', comparing: '#8ff' };
             
             for (let k = 0; k < currentNumBars; k++) {
                 let color = colors.base;
@@ -1617,6 +1742,21 @@ merge(array, left, mid, right):
             }
         });
 
+        // Trigger searches via Enter key in target input
+        if (targetInputEl) {
+            targetInputEl.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (isSorting) return;
+                    if (selectedAlgorithm === 'linearSearch') {
+                        await linearSearch();
+                    } else if (selectedAlgorithm === 'binarySearch') {
+                        await binarySearch();
+                    }
+                }
+            });
+        }
+
         window.onload = initializeData;
 
         // Explanation functions for sidebar buttons
@@ -1641,24 +1781,97 @@ merge(array, left, mid, right):
             messageEl.innerHTML = `<strong>📖 Algorithm Explanation:</strong><br><br>${explanation}`;
         }
 
-        function showComplexityInfo() {
-            const complexities = {
-                bubbleSort: "Time: O(n²) average/worst case, O(n) best case<br>Space: O(1)",
-                insertionSort: "Time: O(n²) average/worst case, O(n) best case<br>Space: O(1)",
-                selectionSort: "Time: O(n²) in all cases<br>Space: O(1)",
-                quickSort: "Time: O(n log n) average case, O(n²) worst case<br>Space: O(log n)",
-                mergeSort: "Time: O(n log n) in all cases<br>Space: O(n)",
-                linearSearch: "Time: O(n) average/worst case, O(1) best case<br>Space: O(1)",
-                binarySearch: "Time: O(log n) in all cases<br>Space: O(1)",
-                insertMethod: "Time: O(n) average/worst case, O(1) best case<br>Space: O(1)",
-                deleteMethod: "Time: O(n) average/worst case, O(1) best case<br>Space: O(1)",
-                // DFS and BFS complexity information removed
-                treeDfs: "Time: O(n) where n=nodes in tree<br>Space: O(h) where h=tree height",
-                treeBfs: "Time: O(n) where n=nodes in tree<br>Space: O(w) where w=max tree width"
+        function getComplexityClass(complexity) {
+            if (complexity.includes('O(1)') || complexity.includes('O(log n)')) {
+                return 'complexity-good';
+            } else if (complexity.includes('O(n)') && !complexity.includes('O(n²)') && !complexity.includes('O(n log n)')) {
+                return 'complexity-moderate';
+            } else {
+                return 'complexity-poor';
+            }
+        }
+
+        function getComplexityTooltip(complexity) {
+            const tooltips = {
+                'O(1)': 'Constant time - always takes the same time regardless of input size',
+                'O(log n)': 'Logarithmic time - very efficient, time increases slowly with input size',
+                'O(n)': 'Linear time - time increases proportionally with input size',
+                'O(n log n)': 'Linearithmic time - efficient for sorting algorithms',
+                'O(n²)': 'Quadratic time - time increases with square of input size',
+                'O(h)': 'Depends on tree height - best O(log n), worst O(n)',
+                'O(w)': 'Depends on tree width - can be up to O(n) in worst case'
             };
+            return tooltips[complexity] || 'Time/space complexity notation';
+        }
+
+        function toggleComplexityInfo() {
+            const complexityBox = document.getElementById('complexityBox');
+            const complexityContent = document.getElementById('complexityContent');
             
-            const complexity = complexities[selectedAlgorithm] || "No complexity information available.";
-            messageEl.innerHTML = `<strong>⏱️ Time & Space Complexity:</strong><br><br>${complexity}`;
+            if (complexityBox.style.display === 'none' || !complexityBox.style.display) {
+                const complexities = {
+                    bubbleSort: { 
+                        timeBest: 'O(n)', timeAvg: 'O(n²)', timeWorst: 'O(n²)', space: 'O(1)'
+                    },
+                    insertionSort: { 
+                        timeBest: 'O(n)', timeAvg: 'O(n²)', timeWorst: 'O(n²)', space: 'O(1)'
+                    },
+                    selectionSort: { 
+                        timeBest: 'O(n²)', timeAvg: 'O(n²)', timeWorst: 'O(n²)', space: 'O(1)'
+                    },
+                    quickSort: { 
+                        timeBest: 'O(n log n)', timeAvg: 'O(n log n)', timeWorst: 'O(n²)', space: 'O(log n)'
+                    },
+                    mergeSort: { 
+                        timeBest: 'O(n log n)', timeAvg: 'O(n log n)', timeWorst: 'O(n log n)', space: 'O(n)'
+                    },
+                    linearSearch: { 
+                        timeBest: 'O(1)', timeAvg: 'O(n)', timeWorst: 'O(n)', space: 'O(1)'
+                    },
+                    binarySearch: { 
+                        timeBest: 'O(1)', timeAvg: 'O(log n)', timeWorst: 'O(log n)', space: 'O(1)'
+                    },
+                    insertMethod: { 
+                        timeBest: 'O(1)', timeAvg: 'O(n)', timeWorst: 'O(n)', space: 'O(1)'
+                    },
+                    deleteMethod: { 
+                        timeBest: 'O(1)', timeAvg: 'O(n)', timeWorst: 'O(n)', space: 'O(1)'
+                    },
+                    treeDfs: { 
+                        timeBest: 'O(n)', timeAvg: 'O(n)', timeWorst: 'O(n)', space: 'O(h)'
+                    },
+                    treeBfs: { 
+                        timeBest: 'O(n)', timeAvg: 'O(n)', timeWorst: 'O(n)', space: 'O(w)'
+                    }
+                };
+                
+                const info = complexities[selectedAlgorithm];
+                if (info) {
+                    complexityContent.innerHTML = `
+                        <div class="complexity-item">
+                            <span class="complexity-label">Best Case:</span>
+                            <span class="complexity-value complexity-tooltip ${getComplexityClass(info.timeBest)}" data-tooltip="${getComplexityTooltip(info.timeBest)}">${info.timeBest}</span>
+                        </div>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Average:</span>
+                            <span class="complexity-value complexity-tooltip ${getComplexityClass(info.timeAvg)}" data-tooltip="${getComplexityTooltip(info.timeAvg)}">${info.timeAvg}</span>
+                        </div>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Worst Case:</span>
+                            <span class="complexity-value complexity-tooltip ${getComplexityClass(info.timeWorst)}" data-tooltip="${getComplexityTooltip(info.timeWorst)}">${info.timeWorst}</span>
+                        </div>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Space:</span>
+                            <span class="complexity-value complexity-tooltip ${getComplexityClass(info.space)}" data-tooltip="${getComplexityTooltip(info.space)}">${info.space}</span>
+                        </div>
+                    `;
+                } else {
+                    complexityContent.innerHTML = '<div>No complexity data available for this algorithm.</div>';
+                }
+                complexityBox.style.display = 'block';
+            } else {
+                complexityBox.style.display = 'none';
+            }
         }
 
         function showHowItWorks() {
@@ -1700,6 +1913,71 @@ merge(array, left, mid, right):
             const cases = useCases[selectedAlgorithm] || "No use case information available.";
             messageEl.innerHTML = `<strong>💡 Use Cases:</strong><br><br>${cases}`;
         }
+    </script>
+
+    <!-- Wobble Cursor Script -->
+    <script>
+    (function(){
+        const root = document.getElementById('wc');
+        if (!root) return;
+        const core = root.querySelector('.wc-core');
+        const ring = root.querySelector('.wc-ring');
+        const glow = root.querySelector('.wc-glow');
+
+        const K_MAIN = 0.2, D_MAIN = 0.72, K_RING = 0.17, D_RING = 0.7, K_GLOW = 0.14, D_GLOW = 0.68;
+        const MAX_STRETCH = 1.6, MAX_ROT = 15;
+
+        let target = { x: window.innerWidth/2, y: window.innerHeight/2 };
+        let main = { x: target.x, y: target.y, vx: 0, vy: 0 };
+        let ringS= { x: target.x, y: target.y, vx: 0, vy: 0 };
+        let glowS= { x: target.x, y: target.y, vx: 0, vy: 0 };
+        let last = { x: target.x, y: target.y, t: performance.now() };
+        let hoverBoost = 0, clickBoost = 0;
+
+        function isInteractive(el){ return !!el && !!el.closest('a, button, [role="button"], [data-interactive]'); }
+
+        function spawnParticle(x,y,vx,vy){
+            const p = document.createElement('div');
+            p.className = 'wc-particle';
+            p.style.left = x+'px'; p.style.top=y+'px';
+            document.body.appendChild(p);
+            const mag = Math.hypot(vx,vy)||0; const nx=(vx/(mag||1))*(6+Math.min(18,mag*0.12)); const ny=(vy/(mag||1))*(6+Math.min(18,mag*0.12));
+            requestAnimationFrame(()=>{ p.style.transform = `translate(calc(-50% + ${nx}px), calc(-50% + ${ny}px)) scale(0.7)`; p.style.opacity='0'; p.style.filter='blur(1px)'; });
+            setTimeout(()=>p.remove(),320);
+        }
+
+        function impact(x,y){ const r=document.createElement('div'); r.className='wc-impact'; r.style.left=x+'px'; r.style.top=y+'px'; document.body.appendChild(r); r.addEventListener('animationend',()=>r.remove()); }
+
+        window.addEventListener('mousemove', (e)=>{
+            target.x = e.clientX; target.y = e.clientY;
+            const now=performance.now(), dt=Math.max(1, now-last.t);
+            const vx=(e.clientX-last.x)/dt*16, vy=(e.clientY-last.y)/dt*16; last={x:e.clientX,y:e.clientY,t:now};
+            if ((vx*vx+vy*vy)>80) spawnParticle(e.clientX,e.clientY,vx,vy);
+            const hover=isInteractive(e.target); root.classList.toggle('wc--hover', hover); hoverBoost = hover ? 0.25 : 0.0;
+        }, { passive: true });
+        window.addEventListener('mousedown', (e)=>{ clickBoost=0.4; impact(e.clientX,e.clientY); }, { passive: true });
+        window.addEventListener('mouseup', ()=>{ clickBoost=0.0; }, { passive: true });
+        window.addEventListener('mouseleave', ()=>{ root.style.opacity='0'; }, { passive: true });
+        window.addEventListener('mouseenter', ()=>{ root.style.opacity='1'; }, { passive: true });
+
+        function step(s,k,d){ const ax=(target.x-s.x)*k - s.vx*d; const ay=(target.y-s.y)*k - s.vy*d; s.vx+=ax; s.vy+=ay; s.x+=s.vx; s.y+=s.vy; }
+        function clamp(v,lo,hi){ return Math.max(lo, Math.min(hi,v)); }
+
+        function loop(){
+            step(main,K_MAIN,D_MAIN); step(ringS,K_RING,D_RING); step(glowS,K_GLOW,D_GLOW);
+            const vx=main.vx, vy=main.vy, speed=Math.hypot(vx,vy), dir=Math.atan2(vy,vx);
+            const base=clamp(speed*0.05 + hoverBoost + clickBoost, 0, 1);
+            const stretch=1 + Math.min(MAX_STRETCH-1, base*(MAX_STRETCH-1));
+            const squash=1 - Math.min(0.3, base*0.3);
+            const rot=clamp(dir*180/Math.PI, -MAX_ROT, MAX_ROT);
+            root.style.transform = `translate(${main.x}px, ${main.y}px) rotate(${rot}deg) scale(${stretch}, ${squash})`;
+            ring.style.transform = `translate(${(ringS.x-main.x)*0.4}px, ${(ringS.y-main.y)*0.4}px)`;
+            glow.style.transform = `translate(${(glowS.x-main.x)*0.6}px, ${(glowS.y-main.y)*0.6}px)`;
+            clickBoost *= 0.88;
+            requestAnimationFrame(loop);
+        }
+        loop();
+    })();
     </script>
 </body>
 </html>
