@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brainware🧠 Algorithms</title>
+    <title>Brainware 🧠 Algorithms</title>
     <style>
         body {
             display: flex;
@@ -14,19 +14,50 @@
             color: #e0e0e0;
             margin: 0;
             padding: 20px;
+            cursor: url('cursors/neon-dragon.ani'), url('cursors/neon-dragon.cur'), auto;
         }
         .logo {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 60px;
-            height: 60px;
+            position: absolute;
+            top: auto;
+            left: 15px;
+            width: 150px;
+            height: 150px;
             z-index: 1000;
-            opacity: 0.9;
-            transition: opacity 0.3s ease;
+            opacity: 1;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(0,255,255,0.65);
+            filter: contrast(1.22) saturate(1.15) brightness(1.06);
+            background-color: transparent;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: auto;
         }
         .logo:hover {
             opacity: 1;
+        }
+        .brand-label {
+            position: fixed;
+            top: 28px;
+            left: 150px; /* logo left (20) + logo width (120) + gap (10) */
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 800;
+            font-size: 28px;
+            letter-spacing: 2px;
+            color: #e6ffff;
+            text-shadow: 0 2px 10px rgba(0, 255, 255, 0.35), 0 0 2px #003c3c;
+            pointer-events: none;
+            user-select: none;
+        }
+        @keyframes logoGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(0,255,255,0.35), 0 0 18px rgba(0,255,255,0.2);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(0,255,255,0.55), 0 0 32px rgba(0,255,255,0.35);
+                transform: scale(1.03);
+            }
         }
         h1 {
             color: #00ffff;
@@ -38,7 +69,8 @@
             margin-bottom: 40px;
             font-size: 3em;
             font-weight: bold;
-            animation: algorithmGlow 2s ease-in-out infinite alternate;
+            /* remove animation and hide separate H1 since we'll show inline title */
+            display: none;
         }
         .algorithm-grid {
             display: grid;
@@ -74,6 +106,29 @@
         }
         a {
             text-decoration: none;
+        }
+        a, button, [role="button"], .explanation-btn, .category-btn { cursor: url('cursors/neon-dragon.ani'), url('cursors/neon-dragon.cur'), pointer; }
+
+        /* Disable custom black hole cursor visuals to use system neon dragon theme */
+        body.blackhole-cursor { cursor: auto; }
+        .bh-cursor { display: none !important; }
+        .bh-ring {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 255, 255, 0.35);
+            filter: blur(2px);
+            animation: bhPulse 2.2s ease-in-out infinite;
+        }
+        .bh-dust { display: none !important; }
+        @keyframes bhDrift {
+            0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); filter: blur(0px); }
+            60% { opacity: 0.5; transform: translate(-20%, -80%) scale(1.2) rotate(45deg); filter: blur(1px); }
+            100% { opacity: 0; transform: translate(40%, -140%) scale(1.8) rotate(90deg); filter: blur(2px); }
+        }
+        @keyframes bhPulse {
+            0%, 100% { opacity: 0.4; box-shadow: 0 0 16px rgba(0,255,255,0.35); }
+            50% { opacity: 0.8; box-shadow: 0 0 28px rgba(155,0,255,0.45); }
         }
         .category-bar{
             display:flex;
@@ -215,25 +270,29 @@
             text-align: center;
             margin: 20px 0;
             font-family: 'Segoe UI', Arial, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .logo-brain {
             font-size: 3em;
             display: inline-block;
-            animation: brainPulse 2s ease-in-out infinite;
             margin-right: 10px;
+            animation: brainPulse 2.2s ease-in-out infinite;
+            text-shadow: 0 0 8px rgba(0,255,255,0.35);
         }
         
         .logo-text {
-            font-size: 2.5em;
-            font-weight: bold;
-            background: linear-gradient(45deg, #00ffff, #ff6b9d, #c44569, #f8b500);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease infinite;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #00ffff;
+        }
+
+        .logo-algo {
+            font-size: 2.2em;
+            font-weight: 600;
+            color: #e0e0e0;
         }
         
         @keyframes brainPulse {
@@ -266,7 +325,7 @@
         }
 
         /* Magical Cursor Styles */
-        body { cursor: none; overflow-x: hidden; }
+        body { overflow-x: hidden; }
         
         .magic-cursor {
             position: fixed;
@@ -420,9 +479,12 @@
 
 </head>
 <body>
+    <img class="logo" src="brain.jpg.jpg" alt="BrainWare Logo" width="60" height="60" />
+    <!-- Neon Black Hole Cursor container -->
+    <div id="bhCursor" class="bh-cursor" aria-hidden="true"><div class="bh-ring"></div></div>
     <div class="text-logo">
-        <span class="logo-brain">🧠</span>
-        <span class="logo-text">BrainWare</span>
+        <span class="logo-text">Brain-Ware<span class="logo-brain">🧠</span>Algorithms</span>
+        
     </div>
     <h1>Algorithms</h1>
     <div class="category-bar" role="tablist" aria-label="Algorithm categories">
@@ -561,11 +623,6 @@
         </div>
     </div>
 
-    <!-- Magical Cursor Container -->
-    <div id="magicCursor" class="magic-cursor" aria-hidden="true">
-        <div class="cursor-glow"></div>
-        <div class="cursor-core"></div>
-    </div>
 </body>
 <script>
 // Category filter for landing page
@@ -787,232 +844,45 @@ window.onclick = function(event) {
     if (event.target === modal) {
         closeModal();
     }
-}
-</script>
+};
 
-<!-- Magical Cursor Script -->
-<script>
-(function() {
-    const cursor = document.getElementById('magicCursor');
-    if (!cursor) return;
+// Enable Black Hole neon cursor
+(function(){
+  const body = document.body;
+  const cursor = document.getElementById('bhCursor');
+  if (!cursor) return;
+  body.classList.add('blackhole-cursor');
 
-    // Cursor position and movement
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let cursorX = mouseX;
-    let cursorY = mouseY;
-    
-    // Trail particles array
-    let particles = [];
-    let particleId = 0;
-    
-    // Rainbow color cycling
-    let hue = 0;
-    
-    // Smooth cursor movement with easing
-    function updateCursorPosition() {
-        const ease = 0.15;
-        cursorX += (mouseX - cursorX) * ease;
-        cursorY += (mouseY - cursorY) * ease;
-        
-        cursor.style.left = cursorX + 'px';
-        cursor.style.top = cursorY + 'px';
-    }
-    
-    // Generate rainbow colors
-    function getRainbowColor(offset = 0) {
-        const h = (hue + offset) % 360;
-        return `hsl(${h}, 80%, 65%)`;
-    }
-    
-    // Create trail particle
-    function createTrailParticle(x, y) {
-        const particle = document.createElement('div');
-        particle.className = 'magic-particle';
-        
-        // Random particle type
-        const types = ['particle-star', 'particle-sparkle', 'particle-bubble'];
-        const type = types[Math.floor(Math.random() * types.length)];
-        particle.classList.add(type);
-        
-        // Random size variation for depth
-        const size = 0.5 + Math.random() * 0.8;
-        particle.style.transform = `translate(-50%, -50%) scale(${size})`;
-        
-        // Rainbow color with slight variation
-        const colorOffset = Math.random() * 60 - 30;
-        particle.style.background = `radial-gradient(circle, ${getRainbowColor(colorOffset)} 0%, transparent 70%)`;
-        particle.style.boxShadow = `0 0 ${10 + Math.random() * 10}px ${getRainbowColor(colorOffset)}`;
-        
-        // Position with slight randomness
-        const offsetX = (Math.random() - 0.5) * 20;
-        const offsetY = (Math.random() - 0.5) * 20;
-        particle.style.left = (x + offsetX) + 'px';
-        particle.style.top = (y + offsetY) + 'px';
-        
-        document.body.appendChild(particle);
-        
-        // Add physics for floating effect
-        const physics = {
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2 - 1,
-            gravity: 0.02,
-            friction: 0.98,
-            life: 1.5
-        };
-        
-        particles.push({ element: particle, physics, id: particleId++ });
-        
-        // Remove after animation
-        setTimeout(() => {
-            if (particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-        }, 1500);
-    }
-    
-    // Update particle physics
-    function updateParticles() {
-        particles = particles.filter(p => {
-            if (!p.element.parentNode) return false;
-            
-            p.physics.vy += p.physics.gravity;
-            p.physics.vx *= p.physics.friction;
-            p.physics.vy *= p.physics.friction;
-            
-            const currentX = parseFloat(p.element.style.left);
-            const currentY = parseFloat(p.element.style.top);
-            
-            p.element.style.left = (currentX + p.physics.vx) + 'px';
-            p.element.style.top = (currentY + p.physics.vy) + 'px';
-            
-            p.physics.life -= 0.016;
-            return p.physics.life > 0;
-        });
-    }
-    
-    // Create explosion effect on click
-    function createExplosion(x, y) {
-        // Create ripple
-        const ripple = document.createElement('div');
-        ripple.className = 'magic-ripple';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.style.borderColor = getRainbowColor();
-        document.body.appendChild(ripple);
-        
-        setTimeout(() => {
-            if (ripple.parentNode) {
-                ripple.parentNode.removeChild(ripple);
-            }
-        }, 1000);
-        
-        // Create explosion particles
-        for (let i = 0; i < 12; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'explosion-particle';
-            
-            const size = 4 + Math.random() * 8;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            
-            const angle = (i / 12) * Math.PI * 2;
-            const distance = 30 + Math.random() * 40;
-            const endX = x + Math.cos(angle) * distance;
-            const endY = y + Math.sin(angle) * distance;
-            
-            particle.style.left = x + 'px';
-            particle.style.top = y + 'px';
-            particle.style.background = getRainbowColor(i * 30);
-            particle.style.boxShadow = `0 0 10px ${getRainbowColor(i * 30)}`;
-            
-            document.body.appendChild(particle);
-            
-            // Animate to end position
-            setTimeout(() => {
-                particle.style.left = endX + 'px';
-                particle.style.top = endY + 'px';
-            }, 10);
-            
-            setTimeout(() => {
-                if (particle.parentNode) {
-                    particle.parentNode.removeChild(particle);
-                }
-            }, 800);
-        }
-        
-        // Play sparkle sound (optional - commented out for now)
-        // const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
-        // audio.play().catch(() => {}); // Ignore errors if audio fails
-    }
-    
-    // Mouse move handler
-    let lastTrailTime = 0;
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        
-        // Create trail particles based on movement speed
-        const now = Date.now();
-        if (now - lastTrailTime > 50) { // Throttle particle creation
-            const speed = Math.sqrt(
-                Math.pow(e.movementX || 0, 2) + 
-                Math.pow(e.movementY || 0, 2)
-            );
-            
-            if (speed > 1) {
-                createTrailParticle(mouseX, mouseY);
-                lastTrailTime = now;
-            }
-        }
-    });
-    
-    // Click handler
-    document.addEventListener('mousedown', (e) => {
-        createExplosion(e.clientX, e.clientY);
-    });
-    
-    // Hide cursor when leaving window
-    document.addEventListener('mouseleave', () => {
-        cursor.style.opacity = '0';
-    });
-    
-    document.addEventListener('mouseenter', () => {
-        cursor.style.opacity = '1';
-    });
-    
-    // Animation loop
-    function animate() {
-        updateCursorPosition();
-        updateParticles();
-        
-        // Cycle rainbow colors
-        hue = (hue + 0.5) % 360;
-        
-        // Update cursor colors
-        const core = cursor.querySelector('.cursor-core');
-        if (core) {
-            core.style.background = `radial-gradient(circle, 
-                ${getRainbowColor(0)} 0%, 
-                ${getRainbowColor(60)} 30%, 
-                ${getRainbowColor(120)} 60%, 
-                ${getRainbowColor(180)} 80%, 
-                transparent 100%)`;
-            core.style.boxShadow = `
-                0 0 20px ${getRainbowColor(0)},
-                0 0 40px ${getRainbowColor(60)},
-                0 0 60px ${getRainbowColor(120)}`;
-        }
-        
-        requestAnimationFrame(animate);
-    }
-    
-    // Start animation
-    animate();
-    
-    // Initialize cursor position
-    cursor.style.left = mouseX + 'px';
-    cursor.style.top = mouseY + 'px';
+  let tx = innerWidth/2, ty = innerHeight/2;
+  let x = tx, y = ty;
+
+  function animate(){
+    x += (tx - x) * 0.22;
+    y += (ty - y) * 0.22;
+    cursor.style.transform = `translate(${x}px, ${y}px)`;
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  function dust(px, py){
+    const d = document.createElement('div');
+    d.className = 'bh-dust';
+    d.style.left = px + 'px';
+    d.style.top = py + 'px';
+    document.body.appendChild(d);
+    d.addEventListener('animationend', ()=> d.remove());
+  }
+
+  window.addEventListener('mousemove', e => {
+    tx = e.clientX; ty = e.clientY;
+    if (Math.random() < 0.06) dust(tx, ty);
+  });
+  window.addEventListener('click', e => dust(e.clientX, e.clientY));
+
+  window.addEventListener('blur', ()=> body.classList.remove('blackhole-cursor'));
+  window.addEventListener('focus', ()=> body.classList.add('blackhole-cursor'));
 })();
 </script>
+
+<!-- Magical Cursor Script removed -->
 </html>
