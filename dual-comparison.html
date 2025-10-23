@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Algorithm Comparison - Brainware 🧠</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+    <style>
+        :root {
+            /* Dark theme colors (default) */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #0d0d0d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-accent: #00ffff;
+            --border-primary: #00ffff;
+            --border-secondary: #00b8c4;
+            --shadow-primary: rgba(0, 255, 255, 0.1);
+            --shadow-secondary: rgba(0, 255, 255, 0.3);
+            --shadow-glow: rgba(0, 255, 255, 0.35);
+            --button-bg: #222;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+        }
+        
+        [data-theme="light"] {
+            /* Light theme colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #fafafa;
+            --text-primary: #212121;
+            --text-secondary: #666666;
+            --text-accent: #1976d2;
+            --border-primary: #1976d2;
+            --border-secondary: #2196f3;
+            --shadow-primary: rgba(25, 118, 210, 0.1);
+            --shadow-secondary: rgba(25, 118, 210, 0.3);
+            --shadow-glow: rgba(25, 118, 210, 0.35);
+            --button-bg: #e3f2fd;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--button-bg) 100%);
+            border-bottom: 2px solid var(--border-primary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, var(--button-bg), var(--bg-secondary));
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .title {
+            color: #00ffff;
+            font-size: 1.8em;
+            margin: 0;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-label {
+            font-size: 0.8em;
+            color: #a0a0a0;
+        }
+        
+        select, input {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 8px;
+        }
+        
+        .start-btn {
+            background: linear-gradient(135deg, #00ffff, #00d2d2);
+            color: #121212;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        .start-btn:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .comparison-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+        
+        .algorithm-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #333;
+        }
+        
+        .algorithm-panel:last-child {
+            border-right: none;
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
+            padding: 15px;
+            border-bottom: 2px solid #00ffff;
+            text-align: center;
+        }
+        
+        .panel-title {
+            color: #00ffff;
+            font-size: 1.4em;
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .algorithm-selector {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 200px;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .visualization-canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: #0d0d0d;
+        }
+        
+        .metrics-panel {
+            background: #1e1e1e;
+            padding: 15px;
+            border-top: 2px solid #00ffff;
+            min-height: 120px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .metric-item {
+            background: #0d0d0d;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        .metric-label {
+            color: #a0a0a0;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            color: #00ffff;
+            font-size: 1.2em;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        .status-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            border: 2px solid #9C27B0;
+            border-radius: 15px;
+            padding: 15px 25px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+            z-index: 1000;
+        }
+        
+        .status-text {
+            color: #e0e0e0;
+            margin: 0;
+            text-align: center;
+        }
+        
+        .winner-announcement {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            color: #121212;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            animation: winnerPulse 2s ease-in-out;
+        }
+        
+        @keyframes winnerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .speed-slider {
+            width: 100px;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--button-bg);
+            border: 2px solid var(--border-secondary);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            z-index: 1001;
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: 0 0 10px var(--shadow-primary);
+        }
+        
+        .theme-toggle-slider {
+            width: 24px;
+            height: 24px;
+            background: var(--text-accent);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        [data-theme="light"] .theme-toggle-slider {
+            transform: translateX(28px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <div class="theme-toggle-slider">🌙</div>
+    </button>
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html" class="back-btn">← Back</a>
+            <h1 class="title">⚡ Dual Algorithm Comparison</h1>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <span class="control-label">Array Size</span>
+                <input type="number" id="arraySize" value="30" min="10" max="100">
+            </div>
+            
+            <div class="control-group">
+                <span class="control-label">Speed</span>
+                <div class="speed-control">
+                    <input type="range" id="speedSlider" class="speed-slider" min="1" max="10" value="5">
+                    <span id="speedValue">5x</span>
+                </div>
+            </div>
+
+
+            <div class="control-group">
+                <button id="randomBtn" class="start-btn" style="background: #FF9800; padding: 8px 12px;">🎲 Generate Random</button>
+                <button id="startBtn" class="start-btn">🚀 Start Comparison</button>
+                <button id="stopBtn" class="start-btn" style="background: #f44336;" disabled>⏹️ Stop</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="comparison-container">
+        <!-- Left Algorithm Panel -->
+        <div class="algorithm-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Algorithm A</h2>
+                <select id="leftAlgorithm" class="algorithm-selector">
+                    <option value="bubbleSort">Bubble Sort</option>
+                    <option value="insertionSort">Insertion Sort</option>
+                    <option value="selectionSort">Selection Sort</option>
+                    <option value="quickSort">Quick Sort</option>
+                    <option value="mergeSort">Merge Sort</option>
+                </select>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="leftCanvas" class="visualization-canvas" width="500" height="400"></canvas>
+            </div>
+            
+            <div class="metrics-panel">
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Comparisons</div>
+                        <div class="metric-value" id="leftComparisons">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Swaps/Moves</div>
+                        <div class="metric-value" id="leftSwaps">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Time Elapsed</div>
+                        <div class="metric-value" id="leftTime">0ms</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Status</div>
+                        <div class="metric-value" id="leftStatus">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Algorithm Panel -->
+        <div class="algorithm-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Algorithm B</h2>
+                <select id="rightAlgorithm" class="algorithm-selector">
+                    <option value="bubbleSort">Bubble Sort</option>
+                    <option value="insertionSort">Insertion Sort</option>
+                    <option value="selectionSort">Selection Sort</option>
+                    <option value="quickSort">Quick Sort</option>
+                    <option value="mergeSort" selected>Merge Sort</option>
+                </select>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="rightCanvas" class="visualization-canvas" width="500" height="400"></canvas>
+            </div>
+            
+            <div class="metrics-panel">
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Comparisons</div>
+                        <div class="metric-value" id="rightComparisons">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Swaps/Moves</div>
+                        <div class="metric-value" id="rightSwaps">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Time Elapsed</div>
+                        <div class="metric-value" id="rightTime">0ms</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Status</div>
+                        <div class="metric-value" id="rightStatus">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-panel">
+        <p class="status-text" id="statusMessage">Select algorithms and click "Start Comparison" to begin synchronized visualization</p>
+        <div id="winnerSection"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let leftCanvas, rightCanvas, leftCtx, rightCtx;
+        let leftData = [], rightData = [];
+        let leftOriginalData = [], rightOriginalData = [];
+        let isRunning = false;
+        let animationSpeed = 100;
+        
+        // Performance tracking
+        let leftMetrics = { comparisons: 0, swaps: 0, startTime: 0 };
+        let rightMetrics = { comparisons: 0, swaps: 0, startTime: 0 };
+        let leftFinished = false, rightFinished = false;
+        
+        // Initialize canvases
+        function initializeCanvases() {
+            leftCanvas = document.getElementById('leftCanvas');
+            rightCanvas = document.getElementById('rightCanvas');
+            
+            if (!leftCanvas || !rightCanvas) {
+                console.error('Canvas elements not found!');
+                return;
+            }
+            
+            leftCtx = leftCanvas.getContext('2d');
+            rightCtx = rightCanvas.getContext('2d');
+            
+            if (!leftCtx || !rightCtx) {
+                console.error('Canvas contexts not available!');
+                return;
+            }
+            
+            console.log('Canvases initialized successfully');
+        }
+        
+        // Generate synchronized data
+        function generateSyncedData() {
+            const size = parseInt(document.getElementById('arraySize').value);
+            const data = [];
+            
+            for (let i = 0; i < size; i++) {
+                data.push(Math.floor(Math.random() * 300) + 10);
+            }
+            
+            // Create identical copies for both sides
+            leftData = [...data];
+            rightData = [...data];
+            leftOriginalData = [...data];
+            rightOriginalData = [...data];
+            
+            console.log('Generated data:', data);
+            
+            // Ensure canvases are initialized before drawing
+            if (!leftCanvas || !rightCanvas) {
+                initializeCanvases();
+            }
+            
+            // Draw with a small delay to ensure DOM is ready
+            setTimeout(() => {
+                drawBars('left');
+                drawBars('right');
+            }, 50);
+        }
+        
+        // Use custom data input
+        function useCustomData() {
+            const customInput = document.getElementById('customData').value.trim();
+            if (!customInput) {
+                alert('Please enter some numbers separated by commas.');
+                return;
+            }
+            
+            try {
+                // Split by comma and clean up the input
+                const rawNumbers = customInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                
+                if (rawNumbers.length === 0) {
+                    throw new Error('No numbers found');
+                }
+                
+                const data = rawNumbers.map(num => {
+                    const parsed = parseFloat(num);
+                    if (isNaN(parsed)) {
+                        throw new Error(`Invalid number: "${num}"`);
+                    }
+                    // Clamp between 1-300 and ensure positive values for visualization
+                    return Math.max(1, Math.min(300, Math.abs(parsed)));
+                });
+                
+                if (data.length === 0) {
+                    throw new Error('No valid numbers found');
+                }
+                
+                if (data.length > 100) {
+                    throw new Error('Too many numbers. Maximum 100 elements allowed.');
+                }
+                
+                // Update array size to match custom data
+                document.getElementById('arraySize').value = data.length;
+                
+                // Create identical copies for both sides
+                leftData = [...data];
+                rightData = [...data];
+                leftOriginalData = [...data];
+                rightOriginalData = [...data];
+                
+                console.log('Custom data set:', data);
+                console.log('Left data:', leftData);
+                console.log('Right data:', rightData);
+                
+                // Ensure canvases are initialized
+                if (!leftCanvas || !rightCanvas) {
+                    console.log('Reinitializing canvases...');
+                    initializeCanvases();
+                }
+                
+                // Redraw both canvases
+                setTimeout(() => {
+                    drawBars('left');
+                    drawBars('right');
+                }, 100);
+                
+                // Clear the input field and show success message
+                document.getElementById('customData').value = '';
+                document.getElementById('statusMessage').textContent = `Custom data loaded: ${data.length} elements`;
+                
+            } catch (error) {
+                alert(`Error parsing custom data: ${error.message}`);
+                document.getElementById('statusMessage').textContent = 'Error loading custom data';
+            }
+        }
+        
+        // Generate random data
+        function generateRandomData() {
+            generateSyncedData();
+            const size = document.getElementById('arraySize').value;
+            document.getElementById('statusMessage').textContent = `Random data generated: ${size} elements`;
+        }
+        
+        // Refresh display - force redraw of current data
+        function refreshDisplay() {
+            console.log('Refreshing display...');
+            
+            // Reinitialize canvases if needed
+            if (!leftCanvas || !rightCanvas) {
+                initializeCanvases();
+            }
+            
+            // Clear canvases
+            if (leftCtx && rightCtx) {
+                leftCtx.clearRect(0, 0, leftCanvas.width, leftCanvas.height);
+                rightCtx.clearRect(0, 0, rightCanvas.width, rightCanvas.height);
+            }
+            
+            // Redraw current data
+            setTimeout(() => {
+                drawBars('left');
+                drawBars('right');
+                document.getElementById('statusMessage').textContent = 'Display refreshed';
+            }, 100);
+        }
+        
+        // Draw bars for specified side
+        function drawBars(side, highlightIndices = []) {
+            const canvas = side === 'left' ? leftCanvas : rightCanvas;
+            const ctx = side === 'left' ? leftCtx : rightCtx;
+            const data = side === 'left' ? leftData : rightData;
+            
+            // Error checking
+            if (!canvas || !ctx) {
+                console.error(`Canvas or context not available for ${side} side`);
+                return;
+            }
+            
+            if (!data || data.length === 0) {
+                console.error(`No data available for ${side} side`);
+                return;
+            }
+            
+            console.log(`Drawing ${data.length} bars for ${side} side:`, data);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const barWidth = canvas.width / data.length;
+            const maxHeight = canvas.height - 40;
+            const maxValue = Math.max(...data);
+            
+            if (maxValue <= 0) {
+                console.error('Invalid max value:', maxValue);
+                return;
+            }
+            
+            data.forEach((value, index) => {
+                const barHeight = (value / maxValue) * maxHeight;
+                const x = index * barWidth;
+                const y = canvas.height - barHeight - 20;
+                
+                // Color based on highlight - use theme-aware colors
+                if (highlightIndices.includes(index)) {
+                    ctx.fillStyle = '#ff4444';
+                } else {
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-accent') || '#00ffff';
+                }
+                
+                ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
+                
+                // Draw value - use theme-aware text color
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary') || '#e0e0e0';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value, x + barWidth/2, canvas.height - 5);
+            });
+        }
+        
+        // Update metrics display
+        function updateMetrics(side, metrics) {
+            const prefix = side === 'left' ? 'left' : 'right';
+            document.getElementById(prefix + 'Comparisons').textContent = metrics.comparisons;
+            document.getElementById(prefix + 'Swaps').textContent = metrics.swaps;
+            
+            if (metrics.startTime > 0) {
+                const elapsed = Date.now() - metrics.startTime;
+                document.getElementById(prefix + 'Time').textContent = elapsed + 'ms';
+            }
+        }
+        
+        // Delay function for animation
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // Bubble Sort Algorithm
+        async function bubbleSort(side) {
+            const data = side === 'left' ? leftData : rightData;
+            const metrics = side === 'left' ? leftMetrics : rightMetrics;
+            
+            document.getElementById(side + 'Status').textContent = 'Sorting...';
+            
+            for (let i = 0; i < data.length - 1 && isRunning; i++) {
+                for (let j = 0; j < data.length - i - 1 && isRunning; j++) {
+                    // Comparison
+                    metrics.comparisons++;
+                    updateMetrics(side, metrics);
+                    drawBars(side, [j, j + 1]);
+                    await delay(animationSpeed);
+                    
+                    if (data[j] > data[j + 1]) {
+                        // Swap
+                        [data[j], data[j + 1]] = [data[j + 1], data[j]];
+                        metrics.swaps++;
+                        updateMetrics(side, metrics);
+                        drawBars(side, [j, j + 1]);
+                        await delay(animationSpeed);
+                    }
+                }
+            }
+            
+            if (isRunning) {
+                document.getElementById(side + 'Status').textContent = 'Complete!';
+                drawBars(side);
+                markFinished(side);
+            }
+        }
+        
+        // Merge Sort Algorithm
+        async function mergeSort(side) {
+            const data = side === 'left' ? leftData : rightData;
+            const metrics = side === 'left' ? leftMetrics : rightMetrics;
+            
+            document.getElementById(side + 'Status').textContent = 'Sorting...';
+            
+            await mergeSortRecursive(data, 0, data.length - 1, side, metrics);
+            
+            if (isRunning) {
+                document.getElementById(side + 'Status').textContent = 'Complete!';
+                drawBars(side);
+                markFinished(side);
+            }
+        }
+        
+        async function mergeSortRecursive(arr, left, right, side, metrics) {
+            if (left < right && isRunning) {
+                const mid = Math.floor((left + right) / 2);
+                
+                await mergeSortRecursive(arr, left, mid, side, metrics);
+                await mergeSortRecursive(arr, mid + 1, right, side, metrics);
+                await merge(arr, left, mid, right, side, metrics);
+            }
+        }
+        
+        async function merge(arr, left, mid, right, side, metrics) {
+            const leftArr = arr.slice(left, mid + 1);
+            const rightArr = arr.slice(mid + 1, right + 1);
+            
+            let i = 0, j = 0, k = left;
+            
+            while (i < leftArr.length && j < rightArr.length && isRunning) {
+                metrics.comparisons++;
+                updateMetrics(side, metrics);
+                drawBars(side, [k]);
+                await delay(animationSpeed);
+                
+                if (leftArr[i] <= rightArr[j]) {
+                    arr[k] = leftArr[i];
+                    i++;
+                } else {
+                    arr[k] = rightArr[j];
+                    j++;
+                }
+                
+                metrics.swaps++;
+                updateMetrics(side, metrics);
+                k++;
+            }
+            
+            while (i < leftArr.length && isRunning) {
+                arr[k] = leftArr[i];
+                metrics.swaps++;
+                updateMetrics(side, metrics);
+                drawBars(side, [k]);
+                await delay(animationSpeed);
+                i++;
+                k++;
+            }
+            
+            while (j < rightArr.length && isRunning) {
+                arr[k] = rightArr[j];
+                metrics.swaps++;
+                updateMetrics(side, metrics);
+                drawBars(side, [k]);
+                await delay(animationSpeed);
+                j++;
+                k++;
+            }
+        }
+        
+        // Selection Sort Algorithm  
+        async function selectionSort(side) {
+            const data = side === 'left' ? leftData : rightData;
+            const metrics = side === 'left' ? leftMetrics : rightMetrics;
+            
+            document.getElementById(side + 'Status').textContent = 'Sorting...';
+            
+            for (let i = 0; i < data.length - 1 && isRunning; i++) {
+                let minIndex = i;
+                
+                for (let j = i + 1; j < data.length && isRunning; j++) {
+                    metrics.comparisons++;
+                    updateMetrics(side, metrics);
+                    drawBars(side, [minIndex, j]);
+                    await delay(animationSpeed);
+                    
+                    if (data[j] < data[minIndex]) {
+                        minIndex = j;
+                    }
+                }
+                
+                if (minIndex !== i) {
+                    [data[i], data[minIndex]] = [data[minIndex], data[i]];
+                    metrics.swaps++;
+                    updateMetrics(side, metrics);
+                    drawBars(side, [i, minIndex]);
+                    await delay(animationSpeed);
+                }
+            }
+            
+            if (isRunning) {
+                document.getElementById(side + 'Status').textContent = 'Complete!';
+                drawBars(side);
+                markFinished(side);
+            }
+        }
+        
+        // Insertion Sort Algorithm
+        async function insertionSort(side) {
+            const data = side === 'left' ? leftData : rightData;
+            const metrics = side === 'left' ? leftMetrics : rightMetrics;
+            
+            document.getElementById(side + 'Status').textContent = 'Sorting...';
+            
+            for (let i = 1; i < data.length && isRunning; i++) {
+                let current = data[i];
+                let j = i - 1;
+                
+                while (j >= 0 && isRunning) {
+                    metrics.comparisons++;
+                    updateMetrics(side, metrics);
+                    drawBars(side, [j, j + 1]);
+                    await delay(animationSpeed);
+                    
+                    if (data[j] > current) {
+                        data[j + 1] = data[j];
+                        metrics.swaps++;
+                        updateMetrics(side, metrics);
+                        j--;
+                    } else {
+                        break;
+                    }
+                }
+                
+                data[j + 1] = current;
+                if (j + 1 !== i) {
+                    metrics.swaps++;
+                    updateMetrics(side, metrics);
+                }
+                drawBars(side, [j + 1]);
+                await delay(animationSpeed);
+            }
+            
+            if (isRunning) {
+                document.getElementById(side + 'Status').textContent = 'Complete!';
+                drawBars(side);
+                markFinished(side);
+            }
+        }
+        
+        // Quick Sort Algorithm
+        async function quickSort(side) {
+            const data = side === 'left' ? leftData : rightData;
+            const metrics = side === 'left' ? leftMetrics : rightMetrics;
+            
+            document.getElementById(side + 'Status').textContent = 'Sorting...';
+            
+            await quickSortRecursive(data, 0, data.length - 1, side, metrics);
+            
+            if (isRunning) {
+                document.getElementById(side + 'Status').textContent = 'Complete!';
+                drawBars(side);
+                markFinished(side);
+            }
+        }
+        
+        async function quickSortRecursive(arr, low, high, side, metrics) {
+            if (low < high && isRunning) {
+                const pi = await partition(arr, low, high, side, metrics);
+                await quickSortRecursive(arr, low, pi - 1, side, metrics);
+                await quickSortRecursive(arr, pi + 1, high, side, metrics);
+            }
+        }
+        
+        async function partition(arr, low, high, side, metrics) {
+            const pivot = arr[high];
+            let i = low - 1;
+            
+            for (let j = low; j < high && isRunning; j++) {
+                metrics.comparisons++;
+                updateMetrics(side, metrics);
+                drawBars(side, [j, high]);
+                await delay(animationSpeed);
+                
+                if (arr[j] <= pivot) {
+                    i++;
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                    metrics.swaps++;
+                    updateMetrics(side, metrics);
+                    drawBars(side, [i, j]);
+                    await delay(animationSpeed);
+                }
+            }
+            
+            [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+            metrics.swaps++;
+            updateMetrics(side, metrics);
+            drawBars(side, [i + 1, high]);
+            await delay(animationSpeed);
+            
+            return i + 1;
+        }
+        
+        // Mark algorithm as finished
+        function markFinished(side) {
+            if (side === 'left') {
+                leftFinished = true;
+            } else {
+                rightFinished = true;
+            }
+            
+            if (leftFinished && rightFinished) {
+                showWinner();
+            }
+        }
+        
+        // Show winner
+        function showWinner() {
+            const leftTime = Date.now() - leftMetrics.startTime;
+            const rightTime = Date.now() - rightMetrics.startTime;
+            
+            const leftAlg = document.getElementById('leftAlgorithm').options[document.getElementById('leftAlgorithm').selectedIndex].text;
+            const rightAlg = document.getElementById('rightAlgorithm').options[document.getElementById('rightAlgorithm').selectedIndex].text;
+            
+            let winner, winnerTime, loser, loserTime;
+            
+            if (leftTime <= rightTime) {
+                winner = leftAlg;
+                winnerTime = leftTime;
+                loser = rightAlg;
+                loserTime = rightTime;
+            } else {
+                winner = rightAlg;
+                winnerTime = rightTime;
+                loser = leftAlg;
+                loserTime = leftTime;
+            }
+            
+            const winnerSection = document.getElementById('winnerSection');
+            winnerSection.innerHTML = `
+                <div class="winner-announcement">
+                    🏆 ${winner} wins! 
+                    <br>Completed in ${winnerTime}ms vs ${loserTime}ms
+                    <br>Performance advantage: ${Math.round(((loserTime - winnerTime) / loserTime) * 100)}%
+                </div>
+            `;
+            
+            document.getElementById('statusMessage').textContent = 'Comparison complete! Check the winner above.';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+        
+        // Algorithm mapping
+        const algorithms = {
+            bubbleSort,
+            insertionSort,
+            selectionSort,
+            quickSort,
+            mergeSort
+        };
+        
+        // Start comparison
+        async function startComparison() {
+            if (isRunning) return;
+            
+            const leftAlg = document.getElementById('leftAlgorithm').value;
+            const rightAlg = document.getElementById('rightAlgorithm').value;
+            
+            // Reset state
+            isRunning = true;
+            leftFinished = false;
+            rightFinished = false;
+            leftMetrics = { comparisons: 0, swaps: 0, startTime: Date.now() };
+            rightMetrics = { comparisons: 0, swaps: 0, startTime: Date.now() };
+            
+            document.getElementById('winnerSection').innerHTML = '';
+            document.getElementById('statusMessage').textContent = `Running ${leftAlg} vs ${rightAlg}...`;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            // Reset data to original state (preserve custom data)
+            leftData = [...leftOriginalData];
+            rightData = [...rightOriginalData];
+            drawBars('left');
+            drawBars('right');
+            
+            // Start both algorithms simultaneously
+            Promise.all([
+                algorithms[leftAlg]('left'),
+                algorithms[rightAlg]('right')
+            ]);
+        }
+        
+        // Stop comparison
+        function stopComparison() {
+            isRunning = false;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('statusMessage').textContent = 'Comparison stopped.';
+            document.getElementById('leftStatus').textContent = 'Stopped';
+            document.getElementById('rightStatus').textContent = 'Stopped';
+        }
+        
+        // Speed control
+        function updateSpeed() {
+            const speed = document.getElementById('speedSlider').value;
+            animationSpeed = 200 - (speed * 18); // 182ms to 20ms
+            document.getElementById('speedValue').textContent = speed + 'x';
+        }
+        
+        // Test canvas drawing
+        function testCanvasDrawing() {
+            if (!leftCanvas || !rightCanvas || !leftCtx || !rightCtx) {
+                console.error('Canvases not properly initialized for testing');
+                return;
+            }
+            
+            // Draw a simple test rectangle
+            leftCtx.fillStyle = '#ff0000';
+            leftCtx.fillRect(10, 10, 50, 50);
+            
+            rightCtx.fillStyle = '#00ff00';
+            rightCtx.fillRect(10, 10, 50, 50);
+            
+            console.log('Test rectangles drawn on both canvases');
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - initializing...');
+            
+            // Initialize canvases with delay to ensure DOM is ready
+            setTimeout(() => {
+                initializeCanvases();
+                
+                // Test canvas drawing
+                testCanvasDrawing();
+                
+                // Generate initial data
+                generateSyncedData();
+            }, 100);
+            
+            document.getElementById('startBtn').addEventListener('click', startComparison);
+            document.getElementById('stopBtn').addEventListener('click', stopComparison);
+            document.getElementById('speedSlider').addEventListener('input', updateSpeed);
+            document.getElementById('arraySize').addEventListener('change', generateSyncedData);
+            document.getElementById('randomBtn').addEventListener('click', generateRandomData);
+
+        });
+    </script>
+
+<script>
+// Theme Management
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const html = document.documentElement;
+    const slider = document.querySelector('.theme-toggle-slider');
+    
+    if (savedTheme === 'light') {
+        html.setAttribute('data-theme', 'light');
+        if (slider) slider.textContent = '☀️';
+    } else {
+        html.removeAttribute('data-theme');
+        if (slider) slider.textContent = '🌙';
+    }
+}
+
+function toggleTheme() {
+    const html = document.documentElement;
+    const slider = document.querySelector('.theme-toggle-slider');
+    const currentTheme = html.getAttribute('data-theme');
+    
+    if (currentTheme === 'light') {
+        html.removeAttribute('data-theme');
+        if (slider) slider.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        html.setAttribute('data-theme', 'light');
+        if (slider) slider.textContent = '☀️';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Initialize theme on page load
+document.addEventListener('DOMContentLoaded', initializeTheme);
+</script>
+</body>
+</html>

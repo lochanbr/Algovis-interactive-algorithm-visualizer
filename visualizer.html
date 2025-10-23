@@ -5,29 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Algorithm Visualization</title>
     <style>
+        :root {
+            /* Dark theme colors (default) */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #0d0d0d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-accent: #00ffff;
+            --border-primary: #00ffff;
+            --border-secondary: #00b8c4;
+            --shadow-primary: rgba(0, 255, 255, 0.1);
+            --shadow-secondary: rgba(0, 255, 255, 0.3);
+            --shadow-glow: rgba(0, 255, 255, 0.35);
+            --button-bg: #222;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --canvas-bg: #0d0d0d;
+        }
+        
+        [data-theme="light"] {
+            /* Light theme colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #fafafa;
+            --text-primary: #212121;
+            --text-secondary: #666666;
+            --text-accent: #1976d2;
+            --border-primary: #1976d2;
+            --border-secondary: #2196f3;
+            --shadow-primary: rgba(25, 118, 210, 0.1);
+            --shadow-secondary: rgba(25, 118, 210, 0.3);
+            --shadow-glow: rgba(25, 118, 210, 0.35);
+            --button-bg: #e3f2fd;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+            --canvas-bg: #fafafa;
+        }
+        
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             margin: 0;
             padding: 20px;
         }
         h1 {
-            color: #00ffff;
-            text-shadow: 
-                0 0 5px #00ffff,
-                0 0 10px #00ffff,
-                0 0 20px #00ffff,
-                0 0 40px #00ffff,
-                0 0 80px #00ffff;
+            color: var(--text-accent);
             font-size: 2.5em;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 3px;
-            animation: intensiveGlow 3s ease-in-out infinite alternate;
+            text-shadow: none;
+            animation: none;
         }
         
         @keyframes intensiveGlow {
@@ -99,9 +130,9 @@
             align-items: center;
         }
         canvas {
-            border: 2px solid var(--algorithm-color, #00ffff);
-            box-shadow: 0 0 10px var(--algorithm-color, #00ffff);
-            background-color: #0d0d0d;
+            border: 2px solid var(--algorithm-color, var(--border-primary));
+            box-shadow: 0 0 10px var(--algorithm-color, var(--shadow-primary));
+            background-color: var(--canvas-bg);
             margin-bottom: 20px;
         }
         .controls {
@@ -129,8 +160,8 @@
             text-transform: uppercase;
         }
         button:hover {
-            background-color: #00d2d2;
-            box-shadow: 0 0 15px #00ffff;
+            background-color: var(--button-bg);
+            box-shadow: 0 0 10px var(--shadow-secondary);
         }
         button:disabled {
             background-color: #444;
@@ -139,36 +170,67 @@
             box-shadow: none;
         }
         .info-panel {
-            width: 360px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* tighten vertical spacing */
-            align-items: stretch;
-            justify-content: flex-start;
+            width: 300px;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px var(--shadow-primary);
         }
         .pseudocode-box, .message-box {
-            background-color: #0d0d0d;
-            border: 2px solid #00ffff;
-            box-shadow: 0 0 8px #00a6ff;
-            padding: 10px 12px;
-            border-radius: 5px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 0 5px var(--shadow-primary);
+            padding: 8px 10px;
+            border-radius: 6px;
             white-space: pre-wrap;
-            color: #e0e0e0;
+            color: var(--text-primary);
+            margin-bottom: 10px;
         }
         .pseudocode-box{
-            /* size to content: let pre determine height and remove scrollbar */
-            overflow: visible;
+            /* Compact styling for pseudocode */
+            overflow: hidden;
             display: block;
-            padding: 6px 8px;
-            margin-top: 0; /* ensure it sits up against the top of the panel */
+            padding: 8px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .pseudocode-box h2 {
+            margin: 0 0 8px 0;
+            font-size: 1em;
+            color: var(--text-accent);
+            font-weight: 600;
         }
         .pseudocode-box pre{
-            display: inline-block;
+            display: block;
             margin: 0;
             white-space: pre-wrap;
             word-break: break-word;
-            font-family: 'Segoe UI', monospace;
-            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+        .code-line {
+            padding: 1px 0;
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+        }
+        .code-line.current-step {
+            background-color: var(--shadow-primary);
+            border-left: 2px solid var(--text-accent);
+            padding-left: 6px;
+        }
+        /* Highlight classes used by JS */
+        .code-line.highlighted {
+            background-color: var(--shadow-primary);
+            border-left: 2px solid var(--text-accent);
+            padding-left: 6px;
+        }
+        .code-line.executing {
+            background-color: rgba(0, 200, 255, 0.18);
+            border-left: 2px solid #00ffff;
+            padding-left: 6px;
         }
         .message-box {
             /* let the explanation fit fully without scrolling */
@@ -185,7 +247,7 @@
             color: #e0e0e0;
             font-size: 13px;
             line-height: 1.4;
-            display: none;
+            display: block;
         }
         .complexity-box h2 {
             margin-top: 0;
@@ -198,6 +260,24 @@
             margin: 8px 0;
             display: flex;
             justify-content: flex-start;
+        }
+        .metrics-item {
+            margin: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 8px;
+            background-color: #1a1a1a;
+            border-radius: 4px;
+            border-left: 3px solid #9C27B0;
+        }
+        .metrics-label {
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+        .metrics-value {
+            font-family: monospace;
+            color: #00ffff;
+            font-weight: bold;
             align-items: center;
             gap: 12px;
         }
@@ -263,8 +343,34 @@
             }
         }
         .pseudocode-box:hover{
-            box-shadow: 0 0 20px #ff9800;
-            border: 2px solid #ff9800;
+            box-shadow: 0 0 8px var(--shadow-secondary);
+            border: 1px solid var(--text-accent);
+        }
+
+        /* Live Code Highlighting Styles - merged with above */
+        
+        .code-line.highlighted {
+            background-color: rgba(0, 255, 255, 0.2);
+            border-left: 4px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            animation: codeGlow 0.6s ease-in-out;
+        }
+        
+        .code-line.executing {
+            background-color: rgba(255, 165, 0, 0.3);
+            border-left: 4px solid #ffa500;
+            box-shadow: 0 0 15px rgba(255, 165, 0, 0.6);
+        }
+        
+        @keyframes codeGlow {
+            0% { 
+                background-color: rgba(0, 255, 255, 0.4);
+                box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            }
+            100% { 
+                background-color: rgba(0, 255, 255, 0.2);
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            }
         }
         .info-panel h2 {
             margin-top: 0;
@@ -277,9 +383,9 @@
             margin-bottom: 20px;
         }
 
-        /* System cursor theme (Amethyst). Place files under ./cursors/ */
-        body { cursor: url('cursors/amethyst.ani'), url('cursors/amethyst.cur'), auto; }
-        a, button, [role="button"], .back-button { cursor: url('cursors/amethyst.ani'), url('cursors/amethyst.cur'), pointer; }
+        /* Use standard system cursors */
+        body { cursor: auto; }
+        a, button, [role="button"], .back-button { cursor: pointer; }
 
         /* Disable previous neon water cursor visuals */
         body.water-cursor-enabled { cursor: auto; }
@@ -291,7 +397,176 @@
         }
         @keyframes waterRipple { }
         /* search canvas subtle styling */
-        #searchCanvas{ background: #0b0b0b; border: 2px solid rgba(0,255,255,0.06); box-shadow: 0 0 8px rgba(0,255,255,0.03); border-radius:6px }
+        #searchCanvas{ background: var(--bg-tertiary); border: 2px solid var(--shadow-primary); box-shadow: 0 0 8px var(--shadow-primary); border-radius:6px }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--button-bg);
+            border: 2px solid var(--border-secondary);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            z-index: 1001;
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: 0 0 10px var(--shadow-primary);
+        }
+        
+        .theme-toggle-slider {
+            width: 24px;
+            height: 24px;
+            background: var(--text-accent);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        [data-theme="light"] .theme-toggle-slider {
+            transform: translateX(28px);
+        }
+        
+        /* Responsive Canvas Design */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                gap: 15px;
+            }
+            
+            .info-panel {
+                width: 250px;
+            }
+            
+            canvas {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .explanation-sidebar {
+                width: 100%;
+                max-width: 400px;
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+                width: 100%;
+            }
+            
+            .info-panel {
+                width: 100%;
+                max-width: 400px;
+                order: 3;
+            }
+            
+            .pseudocode-box {
+                max-height: 150px;
+                font-size: 10px;
+            }
+            
+            .pseudocode-box h2 {
+                font-size: 0.9em;
+            }
+            
+            canvas {
+                width: 100%;
+                max-width: 100%;
+                height: 300px;
+            }
+            
+            #searchCanvas {
+                height: 60px;
+            }
+            
+            #gridCanvas, #treeCanvas {
+                height: 300px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+            
+            .controls > div {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+            
+            select, button {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            h1 {
+                font-size: 2em;
+                text-align: center;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 50px;
+                height: 25px;
+            }
+            
+            .theme-toggle-slider {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+            }
+            
+            [data-theme="light"] .theme-toggle-slider {
+                transform: translateX(23px);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            canvas {
+                height: 250px;
+            }
+            
+            #searchCanvas {
+                height: 50px;
+            }
+            
+            #gridCanvas, #treeCanvas {
+                height: 250px;
+            }
+            
+            .info-panel {
+                padding: 15px;
+            }
+            
+            .pseudocode {
+                font-size: 11px;
+                padding: 10px;
+            }
+        }
         
         /* Preserve external cursor while controlling overflow */
         body { overflow-x: hidden; }
@@ -323,15 +598,226 @@
         .magic-ripple {
             display: none;
         }
+        
+        /* Summary Modal Styles */
+        .summary-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+        }
+        
+        .summary-content {
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            margin: 3% auto;
+            padding: 30px;
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 700px;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+            position: relative;
+            animation: summarySlideIn 0.4s ease-out;
+        }
+        
+        @keyframes summarySlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .summary-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .summary-title {
+            color: var(--text-accent);
+            font-size: 2em;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 10px var(--text-accent);
+        }
+        
+        .summary-algorithm {
+            color: #ffd54f;
+            font-size: 1.2em;
+            margin: 0;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .summary-metric {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .summary-metric:hover {
+            transform: translateY(-2px);
+            border-color: #00ffff;
+        }
+        
+        .summary-metric-label {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .summary-metric-value {
+            color: #00ffff;
+            font-size: 1.8em;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        .summary-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .summary-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-btn-primary {
+            background: linear-gradient(135deg, #00ffff, #00d2d2);
+            color: #121212;
+        }
+        
+        .summary-btn-secondary {
+            background: linear-gradient(135deg, #333, #555);
+            color: #e0e0e0;
+            border: 1px solid #666;
+        }
+        
+        .summary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* Comparison Mode Styles */
+        .comparison-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1500;
+        }
+        
+        .comparison-btn {
+            background: linear-gradient(135deg, #9C27B0, #673AB7);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .comparison-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+        }
+        
+        .comparison-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-left: 2px solid #9C27B0;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1400;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .comparison-header {
+            color: #9C27B0;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #9C27B0;
+            padding-bottom: 10px;
+        }
+        
+        .comparison-item {
+            background: #0d0d0d;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            transition: border-color 0.2s ease;
+        }
+        
+        .comparison-item:hover {
+            border-color: #9C27B0;
+        }
+        
+        .comparison-item-title {
+            color: #00ffff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-item-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+        
+        .comparison-stat {
+            color: #a0a0a0;
+        }
+        
+        .comparison-stat-value {
+            color: #ffd54f;
+            font-weight: 600;
+        }
     </style>
 
 
 
 </head>
 <body>
-    <img class="logo" src="brain.jpg.jpg" alt="BrainWare Logo" width="150" height="150" />
+
     <!-- Neon water cursor container -->
     <div id="waterCursor" class="water-cursor" aria-hidden="true"></div>
+    
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <div class="theme-toggle-slider">🌙</div>
+    </button>
     
     
 
@@ -408,6 +894,23 @@
                 <button id="startBtn">Start</button>
                 <button id="pauseBtn" disabled>Pause</button>
                 <button id="stopBtn" disabled>Stop</button>
+                <button id="step-backward" disabled>Step Backward (⏪)</button>
+                <button id="step-forward" disabled>Step Forward (⏩)</button>
+                
+                <!-- Pathfinding Controls -->
+                <div id="pathfinding-controls" style="display:none;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #333;">
+                    <button id="clear-grid" style="padding:8px 12px;border-radius:6px;background:#ff5722;border:none;color:white;cursor:pointer;font-weight:600;">Clear Grid</button>
+                    <button id="randomize-walls" style="padding:8px 12px;border-radius:6px;background:#9c27b0;border:none;color:white;cursor:pointer;font-weight:600;">Randomize Walls</button>
+                    <div style="display:flex;align-items:center;gap:4px;margin-left:8px;">
+                        <span style="font-size:12px;color:#e0e0e0;">Mode:</span>
+                        <select id="drawing-mode" style="padding:4px;border-radius:4px;border:1px solid #00ffff;background:#222;color:#e0e0e0;">
+                            <option value="wall">Draw Walls</option>
+                            <option value="weight">Add Weights</option>
+                            <option value="start">Move Start</option>
+                            <option value="end">Move End</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="info-panel">
@@ -416,8 +919,21 @@
                 <div id="message">Ready to visualize. Press Start.</div>
             </div>
             <div class="complexity-box" id="complexityBox">
-                <h2>Time & Space Complexity</h2>
-                <div id="complexityContent"></div>
+                <h2>Performance Metrics</h2>
+                <div id="metricsContent">
+                    <div class="metrics-item">
+                        <span class="metrics-label">Comparisons:</span>
+                        <span class="metrics-value" id="comparisonsCount">0</span>
+                    </div>
+                    <div class="metrics-item">
+                        <span class="metrics-label">Swaps/Moves:</span>
+                        <span class="metrics-value" id="swapsCount">0</span>
+                    </div>
+                    <div class="metrics-item">
+                        <span class="metrics-label">Time Elapsed:</span>
+                        <span class="metrics-value" id="timeElapsed">0ms</span>
+                    </div>
+                </div>
             </div>
             <!-- custom speed popover is anchored to the Custom button near the top; no duplicate here -->
             <div class="pseudocode-box">
@@ -493,6 +1009,53 @@
         document.title = `${selectedAlgorithm.replace(/([A-Z])/g, ' $1').trim()} Visualization`;
         document.querySelector('h1').textContent = `${selectedAlgorithm.replace(/([A-Z])/g, ' $1').trim()} Visualization`;
         
+    // Theme Management
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const html = document.documentElement;
+        const slider = document.querySelector('.theme-toggle-slider');
+        
+        if (savedTheme === 'light') {
+            html.setAttribute('data-theme', 'light');
+            if (slider) slider.textContent = '☀️';
+        } else {
+            html.removeAttribute('data-theme');
+            if (slider) slider.textContent = '🌙';
+        }
+    }
+    
+    function toggleTheme() {
+        const html = document.documentElement;
+        const slider = document.querySelector('.theme-toggle-slider');
+        const currentTheme = html.getAttribute('data-theme');
+        
+        if (currentTheme === 'light') {
+            html.removeAttribute('data-theme');
+            if (slider) slider.textContent = '🌙';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            html.setAttribute('data-theme', 'light');
+            if (slider) slider.textContent = '☀️';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+    
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeTheme();
+        updateCanvasSize();
+        drawBars();
+    });
+    
+    // Handle window resize for responsive canvas
+    window.addEventListener('resize', function() {
+        updateCanvasSize();
+        drawBars();
+        if (searchAlgos.has(selectedAlgorithm)) {
+            drawSearchCanvas({});
+        }
+    });
+    
     // Set the algorithm color as a CSS variable (safe)
     document.documentElement.style.setProperty('--algorithm-color', colorsForSelected.base);
 
@@ -509,6 +1072,8 @@
         const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const stopBtn = document.getElementById('stopBtn');
+    const stepBackwardBtn = document.getElementById('step-backward');
+    const stepForwardBtn = document.getElementById('step-forward');
     const customSpeedBtn = document.getElementById('customSpeedBtn');
     const rightSpeedContainer = document.getElementById('rightSpeedContainer');
         const pseudocodeEl = document.getElementById('pseudocode');
@@ -527,102 +1092,166 @@
         let isSorting = false;
         let stopSorting = false;
         
+        // State management for reversible control
+        let historyStack = [];
+        let futureStates = [];
+        let isSteppingMode = false;
+        let currentAlgorithmState = null;
+        
+        // Performance metrics tracking
+        let totalComparisons = 0;
+        let totalSwaps = 0;
+        let startTime = 0;
+        let timeElapsed = 0;
+        let performanceUpdateInterval = null;
+        
         const exampleData = [45, 12, 67, 34, 98, 21, 56, 78, 10, 89, 43, 29, 72, 5, 84, 61, 38, 93, 15, 76];
         let useExampleData = false;
 
         const pseudocodes = {
-            bubbleSort: `for i = 0 to n-1
-  for j = 0 to n-i-2
-    if array[j] > array[j+1]
-      swap(array[j], array[j+1])`,
-            insertionSort: `for i = 1 to n-1
-  key = array[i]
-  j = i - 1
-  while j >= 0 and array[j] > key
-    array[j+1] = array[j]
-    j = j - 1
-  array[j+1] = key`,
-            selectionSort: `for i = 0 to n-1
-  minIndex = i
-  for j = i+1 to n-1
-    if array[j] < array[minIndex]
-      minIndex = j
-  swap(array[i], array[minIndex])`,
-            quickSort: `quickSort(array, low, high):
-  if low < high:
-    pivot = partition(array, low, high)
-    quickSort(array, low, pivot-1)
-    quickSort(array, pivot+1, high)
-
-partition(array, low, high):
-  pivot = array[high]
-  i = low - 1
-  for j = low to high-1:
-    if array[j] <= pivot:
-      i++
-      swap(array[i], array[j])
-  swap(array[i+1], array[high])
-  return i+1`,
-            mergeSort: `mergeSort(array, left, right):
-  if left < right:
-    mid = (left + right) / 2
-    mergeSort(array, left, mid)
-    mergeSort(array, mid+1, right)
-    merge(array, left, mid, right)
-
-merge(array, left, mid, right):
-  copy left and right halves to temp arrays
-  merge back into main array in sorted order`,
-            linearSearch: `linearSearch(array, target):
-    for i = 0 to n-1:
-        if array[i] == target:
-            return i
-    return -1`,
-            binarySearch: `binarySearch(array, target):
-    left = 0
-    right = n - 1
-    while left <= right:
-        mid = (left + right) / 2
-        if array[mid] == target:
-            return mid
-        else if array[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    return -1`,
-            insertMethod: `insertMethod(array, value):
-    position = array.length
-    for i = 0 to array.length-1:
-        if value <= array[i]:
-            position = i
-            break
-    insert value at position
-    return position`,
-            deleteMethod: `deleteMethod(array, value):
-    for i = 0 to array.length-1:
-        if array[i] == value:
-            remove element at index i
-            return i
-    return -1`,
-            // DFS and BFS descriptions removed
-            treeDfs: `treeDfs(node):
-    if node is null:
-        return
-    
-    visit(node)
-    treeDfs(node.left)
-    treeDfs(node.right)`,
-            treeBfs: `treeBfs(root):
-    queue = [root]
-    
-    while queue not empty:
-        node = queue.shift()
-        visit(node)
-        
-        if node.left:
-            queue.push(node.left)
-        if node.right:
-            queue.push(node.right)`
+            bubbleSort: [
+                "for i = 0 to n-1",
+                "  for j = 0 to n-i-2", 
+                "    if array[j] > array[j+1]",
+                "      swap(array[j], array[j+1])"
+            ],
+            insertionSort: [
+                "for i = 1 to n-1",
+                "  key = array[i]",
+                "  j = i - 1", 
+                "  while j >= 0 and array[j] > key",
+                "    array[j+1] = array[j]",
+                "    j = j - 1",
+                "  array[j+1] = key"
+            ],
+            selectionSort: [
+                "for i = 0 to n-1",
+                "  minIndex = i",
+                "  for j = i+1 to n-1",
+                "    if array[j] < array[minIndex]",
+                "      minIndex = j",
+                "  swap(array[i], array[minIndex])"
+            ],
+            quickSort: [
+                "quickSort(array, low, high):",
+                "  if low < high:",
+                "    pivot = partition(array, low, high)",
+                "    quickSort(array, low, pivot-1)",
+                "    quickSort(array, pivot+1, high)",
+                "",
+                "partition(array, low, high):",
+                "  pivot = array[high]",
+                "  i = low - 1",
+                "  for j = low to high-1:",
+                "    if array[j] <= pivot:",
+                "      i++",
+                "      swap(array[i], array[j])",
+                "  swap(array[i+1], array[high])",
+                "  return i+1"
+            ],
+            mergeSort: [
+                "mergeSort(array, left, right):",
+                "  if left < right:",
+                "    mid = (left + right) / 2",
+                "    mergeSort(array, left, mid)",
+                "    mergeSort(array, mid+1, right)",
+                "    merge(array, left, mid, right)",
+                "",
+                "merge(array, left, mid, right):",
+                "  create temp arrays L and R",
+                "  copy data to temp arrays",
+                "  merge temp arrays back to array[left..right]"
+            ],
+            linearSearch: [
+                "linearSearch(array, target):",
+                "  for i = 0 to n-1:",
+                "    if array[i] == target:",
+                "      return i",
+                "  return -1"
+            ],
+            binarySearch: [
+                "binarySearch(array, target):",
+                "  left = 0",
+                "  right = n - 1",
+                "  while left <= right:",
+                "    mid = (left + right) / 2",
+                "    if array[mid] == target:",
+                "      return mid",
+                "    else if array[mid] < target:",
+                "      left = mid + 1",
+                "    else:",
+                "      right = mid - 1",
+                "  return -1"
+            ],
+            insertMethod: [
+                "insertMethod(array, value):",
+                "  position = array.length",
+                "  for i = 0 to array.length-1:",
+                "    if value <= array[i]:",
+                "      position = i",
+                "      break",
+                "  insert value at position",
+                "  return position"
+            ],
+            deleteMethod: [
+                "deleteMethod(array, value):",
+                "  for i = 0 to array.length-1:",
+                "    if array[i] == value:",
+                "      remove element at index i",
+                "      return i",
+                "  return -1"
+            ],
+            treeDfs: [
+                "treeDfs(node):",
+                "  if node is null:",
+                "    return",
+                "  visit(node)",
+                "  treeDfs(node.left)",
+                "  treeDfs(node.right)"
+            ],
+            treeBfs: [
+                "treeBfs(root):",
+                "  queue = [root]",
+                "  while queue not empty:",
+                "    node = queue.shift()",
+                "    visit(node)",
+                "    if node.left:",
+                "      queue.push(node.left)",
+                "    if node.right:",
+                "      queue.push(node.right)"
+            ],
+            dijkstra: [
+                "dijkstra(graph, start, end):",
+                "  distances[start] = 0",
+                "  priority_queue = [(0, start)]",
+                "  while priority_queue not empty:",
+                "    current_dist, current = pop_min(priority_queue)",
+                "    if current == end:",
+                "      return path",
+                "    for neighbor in graph[current]:",
+                "      new_dist = current_dist + weight(current, neighbor)",
+                "      if new_dist < distances[neighbor]:",
+                "        distances[neighbor] = new_dist",
+                "        parent[neighbor] = current",
+                "        push(priority_queue, (new_dist, neighbor))"
+            ],
+            astar: [
+                "astar(graph, start, end):",
+                "  g_score[start] = 0",
+                "  f_score[start] = heuristic(start, end)",
+                "  open_set = [(f_score[start], start)]",
+                "  while open_set not empty:",
+                "    current = pop_min(open_set)",
+                "    if current == end:",
+                "      return reconstruct_path()",
+                "    for neighbor in graph[current]:",
+                "      tentative_g = g_score[current] + weight(current, neighbor)",
+                "      if tentative_g < g_score[neighbor]:",
+                "        g_score[neighbor] = tentative_g",
+                "        f_score[neighbor] = tentative_g + heuristic(neighbor, end)",
+                "        parent[neighbor] = current",
+                "        push(open_set, (f_score[neighbor], neighbor))"
+            ]
         };
 
         // Utility to update current data readout and internal arrays
@@ -762,7 +1391,7 @@ merge(array, left, mid, right):
 
     // Show search UI elements only for search and data manipulation algorithms
     const searchAlgos = new Set(['linearSearch','binarySearch','insertMethod','deleteMethod']);
-    const pathfindingAlgos = new Set([]);
+    const pathfindingAlgos = new Set(['dijkstra', 'astar']);
     const treeAlgos = new Set(['treeDfs','treeBfs']);
     const gridCanvasEl = document.getElementById('gridCanvas');
     const treeCanvasEl = document.getElementById('treeCanvas');
@@ -774,8 +1403,12 @@ merge(array, left, mid, right):
     if (targetInputEl) targetInputEl.style.display = searchAlgos.has(selectedAlgorithm) ? '' : 'none';
     if (gridCanvasEl) gridCanvasEl.style.display = pathfindingAlgos.has(selectedAlgorithm) ? '' : 'none';
     if (treeCanvasEl) treeCanvasEl.style.display = treeAlgos.has(selectedAlgorithm) ? '' : 'none';
-    if (mainCanvasEl) mainCanvasEl.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
-    if (dataInputRowEl) dataInputRowEl.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
+    if (mainCanvasEl) mainCanvasEl.style.display = (treeAlgos.has(selectedAlgorithm) || pathfindingAlgos.has(selectedAlgorithm)) ? 'none' : '';
+    if (dataInputRowEl) dataInputRowEl.style.display = (treeAlgos.has(selectedAlgorithm) || pathfindingAlgos.has(selectedAlgorithm)) ? 'none' : '';
+    
+    // Show/hide pathfinding controls
+    const pathfindingControlsEl = document.getElementById('pathfinding-controls');
+    if (pathfindingControlsEl) pathfindingControlsEl.style.display = pathfindingAlgos.has(selectedAlgorithm) ? 'flex' : 'none';
     if (targetLabelEl) targetLabelEl.style.display = searchAlgos.has(selectedAlgorithm) ? '' : 'none';
     if (exampleDataBtn) exampleDataBtn.style.display = treeAlgos.has(selectedAlgorithm) ? 'none' : '';
     if (positionInputRow) positionInputRow.style.display = (selectedAlgorithm === 'insertMethod') ? 'flex' : 'none';
@@ -793,27 +1426,100 @@ merge(array, left, mid, right):
 
     
 
+        // Responsive canvas sizing function
+        function updateCanvasSize() {
+            const container = canvas.parentElement;
+            const containerWidth = container.clientWidth;
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            // Set canvas dimensions based on screen size
+            if (isSmallMobile) {
+                canvas.width = Math.min(containerWidth - 20, 350);
+                canvas.height = 250;
+            } else if (isMobile) {
+                canvas.width = Math.min(containerWidth - 20, 500);
+                canvas.height = 300;
+            } else {
+                canvas.width = Math.min(containerWidth - 20, 800);
+                canvas.height = 400;
+            }
+            
+            // Update other canvases too
+            if (searchCanvas) {
+                searchCanvas.width = canvas.width;
+                searchCanvas.height = isMobile ? (isSmallMobile ? 50 : 60) : 80;
+            }
+            if (gridCanvas) {
+                gridCanvas.width = canvas.width;
+                gridCanvas.height = canvas.height;
+            }
+            if (treeCanvas) {
+                treeCanvas.width = canvas.width;
+                treeCanvas.height = canvas.height + 100;
+            }
+        }
+        
         function drawBars(bar1 = -1, bar2 = -1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const currentNumBars = data.length;
-            const currentBarWidth = canvas.width / currentNumBars;
+            
+            // Calculate responsive bar width and spacing so small arrays fill the canvas
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            let minBarWidth = isSmallMobile ? 8 : isMobile ? 12 : 16;
+            // Reduce spacing for very small arrays to allow full-width fill
+            let barSpacing = (currentNumBars <= 3) ? 0 : (isSmallMobile ? 1 : 2);
+            
+            // Compute bar width to occupy available canvas width
+            let calculatedBarWidth = (canvas.width - ((currentNumBars - 1) * barSpacing)) / currentNumBars;
+            let currentBarWidth = Math.max(minBarWidth, Math.floor(calculatedBarWidth));
+            
+            // If bars would be too narrow, reduce the number of visible bars on mobile
+            let visibleBars = currentNumBars;
+            if (isMobile && currentBarWidth < minBarWidth && currentNumBars > 20) {
+                visibleBars = Math.floor(canvas.width / (minBarWidth + barSpacing));
+                currentBarWidth = minBarWidth;
+            }
+            
+            // Center bars horizontally
+            const totalUsedWidth = (currentBarWidth * Math.min(visibleBars, currentNumBars)) + (barSpacing * (Math.min(visibleBars, currentNumBars) - 1));
+            const xStart = Math.max(0, Math.floor((canvas.width - totalUsedWidth) / 2));
+            
             const colors = algorithmColors[selectedAlgorithm] || { base: '#e0e0e0', comparing: '#8ff' };
             
-            for (let k = 0; k < currentNumBars; k++) {
+            for (let k = 0; k < Math.min(visibleBars, currentNumBars); k++) {
                 let color = colors.base;
                 if (k === bar1 || k === bar2) {
                     color = colors.comparing;
                 }
                 ctx.fillStyle = color;
-                ctx.fillRect(k * currentBarWidth, canvas.height - data[k], currentBarWidth - 2, data[k]);
+                const xPos = xStart + k * (currentBarWidth + barSpacing);
+                ctx.fillRect(xPos, canvas.height - data[k], currentBarWidth, data[k]);
 
-                ctx.fillStyle = '#e0e0e0';
-                ctx.font = '12px Segoe UI';
+                // Adjust font size based on bar width and screen size
+                const fontSize = Math.max(8, Math.min(12, currentBarWidth * 0.6));
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary') || '#e0e0e0';
+                ctx.font = `${fontSize}px Segoe UI`;
                 ctx.textAlign = 'center';
+                
                 const numberText = originalValues[k].toString();
-                const xPos = k * currentBarWidth + currentBarWidth / 2;
-                const yPos = canvas.height - data[k] - 5;
-                ctx.fillText(numberText, xPos, yPos);
+                const textX = xPos + currentBarWidth / 2;
+                const textY = canvas.height - data[k] - 5;
+                
+                // Only show text if bar is wide enough
+                if (currentBarWidth >= 15) {
+                    ctx.fillText(numberText, textX, textY);
+                }
+            }
+            
+            // Show indication if not all bars are visible
+            if (visibleBars < currentNumBars) {
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') || '#a0a0a0';
+                ctx.font = '12px Segoe UI';
+                ctx.textAlign = 'right';
+                ctx.fillText(`Showing ${visibleBars}/${currentNumBars} elements`, canvas.width - 10, 20);
             }
         }
 
@@ -886,7 +1592,12 @@ merge(array, left, mid, right):
             END: 3,
             VISITED: 4,
             PATH: 5,
-            CURRENT: 6
+            CURRENT: 6,
+            WEIGHT_2: 7,
+            WEIGHT_3: 8,
+            WEIGHT_4: 9,
+            WEIGHT_5: 10,
+            IN_QUEUE: 11
         };
         
         let grid = [];
@@ -940,22 +1651,37 @@ merge(array, left, mid, right):
                             gCtx.fillStyle = '#2a2a2a';
                             break;
                         case GRID_STATES.WALL:
-                            gCtx.fillStyle = '#444444';
+                            gCtx.fillStyle = '#1a1a1a';
                             break;
                         case GRID_STATES.START:
-                            gCtx.fillStyle = '#4CAF50';
+                            gCtx.fillStyle = '#4CAF50'; // Green
                             break;
                         case GRID_STATES.END:
-                            gCtx.fillStyle = '#F44336';
+                            gCtx.fillStyle = '#F44336'; // Red
                             break;
                         case GRID_STATES.VISITED:
-                            gCtx.fillStyle = '#2196F3';
+                            gCtx.fillStyle = 'rgba(33, 150, 243, 0.6)'; // Fading Blue
                             break;
                         case GRID_STATES.PATH:
-                            gCtx.fillStyle = '#FF9800';
+                            gCtx.fillStyle = '#00FFFF'; // Intense Cyan
                             break;
                         case GRID_STATES.CURRENT:
-                            gCtx.fillStyle = '#FFEB3B';
+                            gCtx.fillStyle = '#FFEB3B'; // Yellow
+                            break;
+                        case GRID_STATES.WEIGHT_2:
+                            gCtx.fillStyle = '#8BC34A'; // Light Green
+                            break;
+                        case GRID_STATES.WEIGHT_3:
+                            gCtx.fillStyle = '#FFC107'; // Amber
+                            break;
+                        case GRID_STATES.WEIGHT_4:
+                            gCtx.fillStyle = '#FF9800'; // Orange
+                            break;
+                        case GRID_STATES.WEIGHT_5:
+                            gCtx.fillStyle = '#FF5722'; // Deep Orange
+                            break;
+                        case GRID_STATES.IN_QUEUE:
+                            gCtx.fillStyle = 'rgba(255, 193, 7, 0.8)'; // Glowing Yellow/Orange
                             break;
                     }
                     
@@ -998,9 +1724,363 @@ merge(array, left, mid, right):
             return path;
         }
 
-        // DFS Path Finding Algorithm has been removed
-
-        // BFS Path Finding Algorithm has been removed
+        // Mouse interaction for grid
+        let isMouseDown = false;
+        let currentDrawingMode = 'wall';
+        
+        function getGridPosition(event) {
+            const rect = gridCanvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const col = Math.floor(x / GRID_SIZE);
+            const row = Math.floor(y / GRID_SIZE);
+            return { row, col };
+        }
+        
+        function handleGridClick(event) {
+            if (isSorting) return;
+            const { row, col } = getGridPosition(event);
+            if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return;
+            
+            const currentState = grid[row][col];
+            
+            switch (currentDrawingMode) {
+                case 'wall':
+                    if (currentState !== GRID_STATES.START && currentState !== GRID_STATES.END) {
+                        grid[row][col] = currentState === GRID_STATES.WALL ? GRID_STATES.EMPTY : GRID_STATES.WALL;
+                    }
+                    break;
+                case 'weight':
+                    if (currentState === GRID_STATES.EMPTY) {
+                        grid[row][col] = GRID_STATES.WEIGHT_2;
+                    } else if (currentState >= GRID_STATES.WEIGHT_2 && currentState <= GRID_STATES.WEIGHT_4) {
+                        grid[row][col] = currentState + 1;
+                    } else if (currentState === GRID_STATES.WEIGHT_5) {
+                        grid[row][col] = GRID_STATES.EMPTY;
+                    }
+                    break;
+                case 'start':
+                    if (currentState !== GRID_STATES.END) {
+                        grid[startPos.row][startPos.col] = GRID_STATES.EMPTY;
+                        startPos = { row, col };
+                        grid[row][col] = GRID_STATES.START;
+                    }
+                    break;
+                case 'end':
+                    if (currentState !== GRID_STATES.START) {
+                        grid[endPos.row][endPos.col] = GRID_STATES.EMPTY;
+                        endPos = { row, col };
+                        grid[row][col] = GRID_STATES.END;
+                    }
+                    break;
+            }
+            drawGrid();
+        }
+        
+        function clearGrid() {
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (grid[row][col] === GRID_STATES.VISITED || 
+                        grid[row][col] === GRID_STATES.PATH || 
+                        grid[row][col] === GRID_STATES.CURRENT ||
+                        grid[row][col] === GRID_STATES.IN_QUEUE) {
+                        grid[row][col] = GRID_STATES.EMPTY;
+                    }
+                }
+            }
+            drawGrid();
+        }
+        
+        function randomizeWalls() {
+            // Clear existing walls first
+            for (let row = 1; row < ROWS - 1; row++) {
+                for (let col = 1; col < COLS - 1; col++) {
+                    if (grid[row][col] === GRID_STATES.WALL) {
+                        grid[row][col] = GRID_STATES.EMPTY;
+                    }
+                }
+            }
+            
+            // Add random walls
+            const wallDensity = 0.3;
+            for (let row = 1; row < ROWS - 1; row++) {
+                for (let col = 1; col < COLS - 1; col++) {
+                    if (grid[row][col] === GRID_STATES.EMPTY && Math.random() < wallDensity) {
+                        grid[row][col] = GRID_STATES.WALL;
+                    }
+                }
+            }
+            drawGrid();
+        }
+        
+        function getNodeWeight(state) {
+            switch (state) {
+                case GRID_STATES.WEIGHT_2: return 2;
+                case GRID_STATES.WEIGHT_3: return 3;
+                case GRID_STATES.WEIGHT_4: return 4;
+                case GRID_STATES.WEIGHT_5: return 5;
+                default: return 1;
+            }
+        }
+        
+        // Dijkstra's Algorithm Implementation
+        async function dijkstra() {
+            clearGrid();
+            isSorting = true;
+            stopSorting = false;
+            
+            const distances = new Map();
+            const previous = new Map();
+            const unvisited = new Set();
+            
+            // Initialize distances
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const key = `${row},${col}`;
+                    distances.set(key, Infinity);
+                    unvisited.add(key);
+                }
+            }
+            
+            const startKey = `${startPos.row},${startPos.col}`;
+            distances.set(startKey, 0);
+            
+            highlightLine(0); // dijkstra function start
+            await pause();
+            
+            highlightLine(1); // distances[start] = 0
+            await pause();
+            
+            while (unvisited.size > 0 && !stopSorting) {
+                highlightLine(3); // while priority_queue not empty
+                
+                // Find unvisited node with minimum distance
+                let current = null;
+                let minDistance = Infinity;
+                
+                for (const nodeKey of unvisited) {
+                    if (distances.get(nodeKey) < minDistance) {
+                        minDistance = distances.get(nodeKey);
+                        current = nodeKey;
+                    }
+                }
+                
+                if (current === null || minDistance === Infinity) break;
+                
+                const [currentRow, currentCol] = current.split(',').map(Number);
+                unvisited.delete(current);
+                
+                highlightLine(4); // current_dist, current = pop_min
+                
+                // Mark as visited
+                if (grid[currentRow][currentCol] !== GRID_STATES.START && 
+                    grid[currentRow][currentCol] !== GRID_STATES.END) {
+                    grid[currentRow][currentCol] = GRID_STATES.VISITED;
+                }
+                drawGrid();
+                await pause();
+                
+                // Check if we reached the end
+                if (currentRow === endPos.row && currentCol === endPos.col) {
+                    highlightLine(5); // if current == end
+                    highlightLine(6); // return path
+                    
+                    // Reconstruct and draw path
+                    const path = [];
+                    let pathNode = current;
+                    while (previous.has(pathNode)) {
+                        const [row, col] = pathNode.split(',').map(Number);
+                        path.unshift({ row, col });
+                        pathNode = previous.get(pathNode);
+                    }
+                    
+                    // Draw path
+                    for (const node of path) {
+                        if (grid[node.row][node.col] !== GRID_STATES.START && 
+                            grid[node.row][node.col] !== GRID_STATES.END) {
+                            grid[node.row][node.col] = GRID_STATES.PATH;
+                        }
+                    }
+                    drawGrid();
+                    break;
+                }
+                
+                // Check neighbors
+                highlightLine(7); // for neighbor in graph[current]
+                const neighbors = getNeighbors(currentRow, currentCol);
+                
+                for (const neighbor of neighbors) {
+                    if (stopSorting) break;
+                    
+                    const neighborKey = `${neighbor.row},${neighbor.col}`;
+                    if (!unvisited.has(neighborKey)) continue;
+                    
+                    const weight = getNodeWeight(grid[neighbor.row][neighbor.col]);
+                    const newDistance = distances.get(current) + weight;
+                    
+                    highlightLine(8); // new_dist = current_dist + weight
+                    
+                    if (newDistance < distances.get(neighborKey)) {
+                        highlightLine(9); // if new_dist < distances[neighbor]
+                        distances.set(neighborKey, newDistance);
+                        previous.set(neighborKey, current);
+                        
+                        highlightLine(10); // distances[neighbor] = new_dist
+                        highlightLine(11); // parent[neighbor] = current
+                        
+                        // Mark as in queue
+                        if (grid[neighbor.row][neighbor.col] !== GRID_STATES.START && 
+                            grid[neighbor.row][neighbor.col] !== GRID_STATES.END) {
+                            grid[neighbor.row][neighbor.col] = GRID_STATES.IN_QUEUE;
+                        }
+                    }
+                }
+                drawGrid();
+                await pause();
+            }
+            
+            isSorting = false;
+            clearHighlights();
+            updateMessage(stopSorting ? "Pathfinding stopped!" : "Pathfinding complete!");
+        }
+        
+        // A* Algorithm Implementation
+        async function astar() {
+            clearGrid();
+            isSorting = true;
+            stopSorting = false;
+            
+            const gScore = new Map();
+            const fScore = new Map();
+            const previous = new Map();
+            const openSet = new Set();
+            const closedSet = new Set();
+            
+            // Initialize scores
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const key = `${row},${col}`;
+                    gScore.set(key, Infinity);
+                    fScore.set(key, Infinity);
+                }
+            }
+            
+            const startKey = `${startPos.row},${startPos.col}`;
+            gScore.set(startKey, 0);
+            fScore.set(startKey, heuristic(startPos, endPos));
+            openSet.add(startKey);
+            
+            highlightLine(0); // astar function start
+            await pause();
+            
+            highlightLine(1); // g_score[start] = 0
+            await pause();
+            
+            highlightLine(2); // f_score[start] = heuristic
+            await pause();
+            
+            while (openSet.size > 0 && !stopSorting) {
+                highlightLine(4); // while open_set not empty
+                
+                // Find node in openSet with lowest fScore
+                let current = null;
+                let minFScore = Infinity;
+                
+                for (const nodeKey of openSet) {
+                    if (fScore.get(nodeKey) < minFScore) {
+                        minFScore = fScore.get(nodeKey);
+                        current = nodeKey;
+                    }
+                }
+                
+                const [currentRow, currentCol] = current.split(',').map(Number);
+                
+                highlightLine(5); // current = pop_min(open_set)
+                
+                if (currentRow === endPos.row && currentCol === endPos.col) {
+                    highlightLine(6); // if current == end
+                    highlightLine(7); // return reconstruct_path
+                    
+                    // Reconstruct and draw path
+                    const path = [];
+                    let pathNode = current;
+                    while (previous.has(pathNode)) {
+                        const [row, col] = pathNode.split(',').map(Number);
+                        path.unshift({ row, col });
+                        pathNode = previous.get(pathNode);
+                    }
+                    
+                    // Draw path
+                    for (const node of path) {
+                        if (grid[node.row][node.col] !== GRID_STATES.START && 
+                            grid[node.row][node.col] !== GRID_STATES.END) {
+                            grid[node.row][node.col] = GRID_STATES.PATH;
+                        }
+                    }
+                    drawGrid();
+                    break;
+                }
+                
+                openSet.delete(current);
+                closedSet.add(current);
+                
+                // Mark as visited
+                if (grid[currentRow][currentCol] !== GRID_STATES.START && 
+                    grid[currentRow][currentCol] !== GRID_STATES.END) {
+                    grid[currentRow][currentCol] = GRID_STATES.VISITED;
+                }
+                drawGrid();
+                await pause();
+                
+                // Check neighbors
+                highlightLine(8); // for neighbor in graph[current]
+                const neighbors = getNeighbors(currentRow, currentCol);
+                
+                for (const neighbor of neighbors) {
+                    if (stopSorting) break;
+                    
+                    const neighborKey = `${neighbor.row},${neighbor.col}`;
+                    if (closedSet.has(neighborKey)) continue;
+                    
+                    const weight = getNodeWeight(grid[neighbor.row][neighbor.col]);
+                    const tentativeGScore = gScore.get(current) + weight;
+                    
+                    highlightLine(9); // tentative_g = g_score[current] + weight
+                    
+                    if (tentativeGScore < gScore.get(neighborKey)) {
+                        highlightLine(10); // if tentative_g < g_score[neighbor]
+                        
+                        previous.set(neighborKey, current);
+                        gScore.set(neighborKey, tentativeGScore);
+                        fScore.set(neighborKey, tentativeGScore + heuristic(neighbor, endPos));
+                        
+                        highlightLine(11); // g_score[neighbor] = tentative_g
+                        highlightLine(12); // f_score[neighbor] = tentative_g + heuristic
+                        
+                        if (!openSet.has(neighborKey)) {
+                            openSet.add(neighborKey);
+                            
+                            // Mark as in queue
+                            if (grid[neighbor.row][neighbor.col] !== GRID_STATES.START && 
+                                grid[neighbor.row][neighbor.col] !== GRID_STATES.END) {
+                                grid[neighbor.row][neighbor.col] = GRID_STATES.IN_QUEUE;
+                            }
+                        }
+                    }
+                }
+                drawGrid();
+                await pause();
+            }
+            
+            isSorting = false;
+            clearHighlights();
+            updateMessage(stopSorting ? "Pathfinding stopped!" : "Pathfinding complete!");
+        }
+        
+        // Heuristic function for A* (Manhattan distance)
+        function heuristic(nodeA, nodeB) {
+            return Math.abs(nodeA.row - nodeB.row) + Math.abs(nodeA.col - nodeB.col);
+        }
 
         // Tree-based traversal algorithms
         const treeCanvas = document.getElementById('treeCanvas');
@@ -1270,6 +2350,9 @@ merge(array, left, mid, right):
         }
 
         function initializeData() {
+            // Clear history when initializing new data
+            clearHistory();
+            
             if (pathfindingAlgos.has(selectedAlgorithm)) {
                 // Initialize grid for pathfinding algorithms
                 initializeGrid();
@@ -1335,29 +2418,395 @@ merge(array, left, mid, right):
             messageEl.textContent = text;
         }
 
+        // Performance metrics functions
+        function resetPerformanceMetrics() {
+            totalComparisons = 0;
+            totalSwaps = 0;
+            startTime = Date.now();
+            timeElapsed = 0;
+            updatePerformanceDisplay();
+        }
+
+        function incrementComparisons() {
+            totalComparisons++;
+            updatePerformanceDisplay();
+        }
+
+        function incrementSwaps() {
+            totalSwaps++;
+            updatePerformanceDisplay();
+        }
+
+        function updatePerformanceDisplay() {
+            document.getElementById('comparisonsCount').textContent = totalComparisons;
+            document.getElementById('swapsCount').textContent = totalSwaps;
+            if (startTime > 0) {
+                timeElapsed = Date.now() - startTime;
+                document.getElementById('timeElapsed').textContent = timeElapsed + 'ms';
+            }
+        }
+
+        function startPerformanceTracking() {
+            resetPerformanceMetrics();
+            // Update time every 100ms during sorting
+            performanceUpdateInterval = setInterval(() => {
+                if (isSorting) {
+                    updatePerformanceDisplay();
+                }
+            }, 100);
+        }
+
+        function stopPerformanceTracking() {
+            if (performanceUpdateInterval) {
+                clearInterval(performanceUpdateInterval);
+                performanceUpdateInterval = null;
+            }
+            updatePerformanceDisplay(); // Final update
+            
+            // Show summary modal after a short delay if algorithm completed successfully
+            if (!stopSorting) {
+                setTimeout(() => {
+                    showSummary();
+                }, 500);
+            }
+        }
+
+        // Summary and Comparison Functions
+        let comparisonData = [];
+        
+        // Load existing comparison data from localStorage
+        function loadComparisonData() {
+            try {
+                const stored = localStorage.getItem('algorithmComparisons');
+                if (stored) {
+                    comparisonData = JSON.parse(stored);
+                    updateComparisonPanel();
+                }
+            } catch (e) {
+                console.error('Error loading comparison data:', e);
+                comparisonData = [];
+            }
+        }
+
+        function showSummary() {
+            const algorithmNames = {
+                bubbleSort: 'Bubble Sort',
+                insertionSort: 'Insertion Sort',
+                selectionSort: 'Selection Sort',
+                quickSort: 'Quick Sort',
+                mergeSort: 'Merge Sort',
+                linearSearch: 'Linear Search',
+                binarySearch: 'Binary Search',
+                insertMethod: 'Insert Method',
+                deleteMethod: 'Delete Method'
+            };
+
+            document.getElementById('summaryAlgorithmName').textContent = algorithmNames[selectedAlgorithm] || selectedAlgorithm;
+            document.getElementById('summaryInputSize').textContent = data.length;
+            document.getElementById('summaryComparisons').textContent = totalComparisons;
+            document.getElementById('summarySwaps').textContent = totalSwaps;
+            document.getElementById('summaryTime').textContent = timeElapsed;
+            
+            document.getElementById('summaryModal').style.display = 'block';
+        }
+
+        function closeSummary() {
+            document.getElementById('summaryModal').style.display = 'none';
+        }
+
+        function runAgain() {
+            closeSummary();
+            // Reset and regenerate data
+            generateData();
+        }
+
+        function addToComparison() {
+            const algorithmNames = {
+                bubbleSort: 'Bubble Sort',
+                insertionSort: 'Insertion Sort',
+                selectionSort: 'Selection Sort',
+                quickSort: 'Quick Sort',
+                mergeSort: 'Merge Sort',
+                linearSearch: 'Linear Search',
+                binarySearch: 'Binary Search',
+                insertMethod: 'Insert Method',
+                deleteMethod: 'Delete Method'
+            };
+
+            const result = {
+                algorithm: algorithmNames[selectedAlgorithm] || selectedAlgorithm,
+                inputSize: data.length,
+                comparisons: totalComparisons,
+                swaps: totalSwaps,
+                time: timeElapsed,
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            comparisonData.push(result);
+            
+            // Save to localStorage for persistence
+            try {
+                localStorage.setItem('algorithmComparisons', JSON.stringify(comparisonData));
+            } catch (e) {
+                console.error('Error saving comparison data:', e);
+            }
+            
+            updateComparisonPanel();
+            closeSummary();
+            
+            // Show success message with link to detailed comparison
+            updateMessage(`✅ ${result.algorithm} added to comparison! <a href="comparison.html" style="color: #00ffff;">View detailed analysis</a>`);
+        }
+
+        function toggleComparisonPanel() {
+            const panel = document.getElementById('comparisonPanel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function updateComparisonPanel() {
+            const list = document.getElementById('comparisonList');
+            
+            if (comparisonData.length === 0) {
+                list.innerHTML = `
+                    <p style="color: #a0a0a0; text-align: center; margin: 50px 0;">
+                        No algorithms compared yet.<br>
+                        Run algorithms and add them to comparison!
+                    </p>
+                `;
+                return;
+            }
+
+            list.innerHTML = comparisonData.map((item, index) => `
+                <div class="comparison-item">
+                    <div class="comparison-item-title">
+                        ${item.algorithm} 
+                        <span style="font-size: 0.8em; color: #666;">(${item.timestamp})</span>
+                        <button style="float: right; background: none; border: none; color: #ff4444; cursor: pointer;" onclick="removeComparison(${index})">🗑️</button>
+                    </div>
+                    <div class="comparison-item-stats">
+                        <div class="comparison-stat">Input Size: <span class="comparison-stat-value">${item.inputSize}</span></div>
+                        <div class="comparison-stat">Time: <span class="comparison-stat-value">${item.time}ms</span></div>
+                        <div class="comparison-stat">Comparisons: <span class="comparison-stat-value">${item.comparisons}</span></div>
+                        <div class="comparison-stat">Swaps/Moves: <span class="comparison-stat-value">${item.swaps}</span></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeComparison(index) {
+            comparisonData.splice(index, 1);
+            updateComparisonPanel();
+        }
+
+        function clearComparisons() {
+            comparisonData = [];
+            updateComparisonPanel();
+        }
+
+        // State management functions for reversible control
+        function captureState(description = '') {
+            const state = {
+                data: [...data],
+                originalValues: [...originalValues],
+                description: description,
+                timestamp: Date.now()
+            };
+            
+            // Add algorithm-specific state variables if they exist
+            if (currentAlgorithmState) {
+                state.algorithmState = { ...currentAlgorithmState };
+            }
+            
+            historyStack.push(state);
+            
+            // Clear future states when new action is taken
+            futureStates = [];
+            
+            // Update button states
+            updateStepButtons();
+        }
+
+        function restoreState(state) {
+            if (!state) return false;
+            
+            data = [...state.data];
+            originalValues = [...state.originalValues];
+            
+            // Restore algorithm-specific state if it exists
+            if (state.algorithmState) {
+                currentAlgorithmState = { ...state.algorithmState };
+            }
+            
+            drawBars();
+            if (searchAlgos.has(selectedAlgorithm)) drawSearchCanvas({});
+            updateMessage(`Restored: ${state.description}`);
+            
+            return true;
+        }
+
+        function stepBackward() {
+            if (historyStack.length === 0) return false;
+            
+            // Save current state to future states
+            const currentState = {
+                data: [...data],
+                originalValues: [...originalValues],
+                description: 'Current state',
+                timestamp: Date.now()
+            };
+            
+            if (currentAlgorithmState) {
+                currentState.algorithmState = { ...currentAlgorithmState };
+            }
+            
+            futureStates.push(currentState);
+            
+            // Restore previous state
+            const previousState = historyStack.pop();
+            restoreState(previousState);
+            
+            updateStepButtons();
+            return true;
+        }
+
+        function stepForward() {
+            if (futureStates.length === 0) return false;
+            
+            // Save current state to history (without using captureState to avoid clearing futureStates)
+            const currentState = {
+                data: [...data],
+                originalValues: [...originalValues],
+                description: 'Before forward step',
+                timestamp: Date.now()
+            };
+            
+            if (currentAlgorithmState) {
+                currentState.algorithmState = { ...currentAlgorithmState };
+            }
+            
+            historyStack.push(currentState);
+            
+            // Restore future state
+            const futureState = futureStates.pop();
+            restoreState(futureState);
+            
+            updateStepButtons();
+            return true;
+        }
+
+        function updateStepButtons() {
+            if (stepBackwardBtn) {
+                stepBackwardBtn.disabled = historyStack.length === 0 || isSorting;
+            }
+            if (stepForwardBtn) {
+                stepForwardBtn.disabled = futureStates.length === 0 || isSorting;
+            }
+        }
+
+        function clearHistory() {
+            historyStack = [];
+            futureStates = [];
+            currentAlgorithmState = null;
+            updateStepButtons();
+        }
+
         function updatePseudocode() {
-            pseudocodeEl.textContent = pseudocodes[selectedAlgorithm];
+            const code = pseudocodes[selectedAlgorithm];
+            if (Array.isArray(code)) {
+                // Create line-by-line structure for highlighting
+                pseudocodeEl.innerHTML = '';
+                code.forEach((line, index) => {
+                    const lineEl = document.createElement('div');
+                    lineEl.className = 'code-line';
+                    lineEl.id = `code-line-${index}`;
+                    lineEl.textContent = line || ' '; // Empty lines get a space
+                    pseudocodeEl.appendChild(lineEl);
+                });
+            } else {
+                // Fallback for old string format
+                pseudocodeEl.textContent = code || '';
+            }
+        }
+
+        // Live Code Highlighting Functions
+        function highlightLine(lineNumber, type = 'highlighted') {
+            // Clear previous highlights
+            clearHighlights();
+            
+            // Highlight the specified line
+            const lineEl = document.getElementById(`code-line-${lineNumber}`);
+            if (lineEl) {
+                lineEl.classList.add(type);
+                
+                // Scroll the line into view if needed
+                lineEl.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'nearest'
+                });
+            }
+        }
+
+        function clearHighlights() {
+            const lines = document.querySelectorAll('.code-line');
+            lines.forEach(line => {
+                line.classList.remove('highlighted', 'executing');
+            });
+        }
+
+        function highlightExecutingLine(lineNumber) {
+            highlightLine(lineNumber, 'executing');
         }
 
         async function bubbleSort() {
             isSorting = true;
             stopSorting = false;
             stopBtn.disabled = false;
+            clearHistory(); // Clear previous history when starting new sort
+            updateStepButtons();
+            startPerformanceTracking(); // Start tracking performance metrics
             const currentNumBars = data.length;
             
+            // Capture initial state
+            captureState('Initial state');
+            highlightLine(0);
+            
+            // Highlight outer loop line
+            highlightLine(0);
             for (let i = 0; i < currentNumBars && !stopSorting; i++) {
+                // Capture state at start of each pass
+                currentAlgorithmState = { i, j: -1, pass: i + 1 };
+                captureState(`Pass ${i + 1} started`);
+                
                 updateMessage(`Outer loop: Pass ${i + 1}/${currentNumBars}.`);
                 await pause();
+                
+                // Highlight inner loop line
+                highlightLine(1);
                 for (let j = 0; j < currentNumBars - i - 1 && !stopSorting; j++) {
+                    // Update algorithm state for current comparison
+                    currentAlgorithmState = { i, j, pass: i + 1 };
+                    captureState(`Comparing indices ${j} and ${j + 1}`);
+                    
+                    // Highlight comparison line
+                    highlightLine(2);
                     drawBars(j, j + 1);
                     const cond = originalValues[j] > originalValues[j + 1];
+                    incrementComparisons(); // Track comparison
                     lastConditionDetail = `Comparing index ${j} (${originalValues[j]}) > index ${j+1} (${originalValues[j+1]}) ? ${cond ? 'true' : 'false'}`;
                     updateMessage(`Comparing elements at index ${j} (${originalValues[j]}) and ${j + 1} (${originalValues[j + 1]}). Condition (a > b): ${cond ? 'true' : 'false'}.`);
                     await pause();
                     
                     if (data[j] > data[j + 1]) {
+                        // Capture state before swap
+                        captureState(`Before swap: ${originalValues[j]} and ${originalValues[j + 1]}`);
+                        
+                        // Highlight swap line
+                        highlightLine(3);
                         [data[j], data[j + 1]] = [data[j + 1], data[j]];
                         [originalValues[j], originalValues[j + 1]] = [originalValues[j + 1], originalValues[j]];
+                        incrementSwaps(); // Track swap
+                        
                         drawBars(j, j + 1);
                         updateMessage(`Swapping elements at index ${j} and ${j + 1}.`);
                         await pause();
@@ -1367,64 +2816,132 @@ merge(array, left, mid, right):
             
             isSorting = false;
             stopBtn.disabled = true;
+            stopPerformanceTracking(); // Stop tracking performance metrics
             drawBars();
             updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+            clearHighlights(); // Clear code highlighting when algorithm completes
+            updateStepButtons(); // Re-enable step buttons after sorting completes
         }
 
         async function insertionSort() {
             isSorting = true;
             stopSorting = false;
             stopBtn.disabled = false;
+            clearHistory(); // Clear previous history when starting new sort
+            updateStepButtons();
+            startPerformanceTracking(); // Start tracking performance metrics
             const currentNumBars = data.length;
             
+            // Capture initial state
+            captureState('Initial state');
+            
+            // Highlight outer loop line
+            highlightLine(0);
             for (let i = 1; i < currentNumBars && !stopSorting; i++) {
+                // Highlight key selection line
+                highlightLine(1);
                 let current = data[i];
                 let currentVal = originalValues[i];
+                
+                // Highlight j initialization line
+                highlightLine(2);
                 let j = i - 1;
+                
+                // Capture state when selecting key
+                currentAlgorithmState = { i, j, current: currentVal, keyIndex: i };
+                captureState(`Selected key: ${currentVal} at index ${i}`);
+                
                 updateMessage(`Taking element at index ${i} (${currentVal}) as key.`);
                 await pause();
                 
+                // Highlight while loop condition line
+                highlightLine(3);
                 while (j >= 0 && data[j] > current && !stopSorting) {
                     const cond = originalValues[j] > currentVal;
+                    incrementComparisons(); // Track comparison
                     lastConditionDetail = `Is index ${j} value ${originalValues[j]} > key ${currentVal}? ${cond ? 'true' : 'false'}`;
+                    
+                    // Capture state before shift
+                    currentAlgorithmState = { i, j, current: currentVal, keyIndex: i, shifting: true };
+                    captureState(`Before shift: moving ${originalValues[j]} from index ${j} to ${j + 1}`);
+                    
+                    // Highlight array shift line
+                    highlightLine(4);
                     data[j + 1] = data[j];
                     originalValues[j + 1] = originalValues[j];
+                    incrementSwaps(); // Track move/shift operation
+                    
+                    // Highlight j decrement line
+                    highlightLine(5);
                     j = j - 1;
                     drawBars(j + 1, i);
                     updateMessage(`Condition (a > key) is ${cond ? 'true' : 'false'} — shifting element at index ${j + 1} to the right.`);
                     await pause();
+                    
+                    // Re-highlight while condition for next iteration
+                    highlightLine(3);
                 }
+                
+                // Capture state before inserting key
+                currentAlgorithmState = { i, j, current: currentVal, keyIndex: i, inserting: true };
+                captureState(`Inserting key ${currentVal} at position ${j + 1}`);
+                
+                // Highlight key insertion line
+                highlightLine(6);
                 data[j + 1] = current;
                 originalValues[j + 1] = currentVal;
+                incrementSwaps(); // Track key insertion move
                 drawBars(i, j + 1);
                 await pause();
             }
             
             isSorting = false;
             stopBtn.disabled = true;
+            stopPerformanceTracking(); // Stop tracking performance metrics
             drawBars();
             updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+            clearHighlights(); // Clear code highlighting when algorithm completes
+            updateStepButtons(); // Re-enable step buttons after sorting completes
         }
 
         async function selectionSort() {
             isSorting = true;
             stopSorting = false;
             stopBtn.disabled = false;
+            clearHistory(); // Clear previous history when starting new sort
+            updateStepButtons();
+            startPerformanceTracking(); // Start tracking performance metrics
             const currentNumBars = data.length;
+            
+            // Capture initial state
+            captureState('Initial state');
             
             for (let i = 0; i < currentNumBars && !stopSorting; i++) {
                 let minIndex = i;
+                
+                // Capture state at start of each pass
+                currentAlgorithmState = { i, minIndex, pass: i + 1 };
+                captureState(`Pass ${i + 1}: Finding minimum from index ${i}`);
+                
                 updateMessage(`Finding minimum element from index ${i} to ${currentNumBars-1}`);
                 await pause();
                 
                 for (let j = i + 1; j < currentNumBars && !stopSorting; j++) {
+                    // Update algorithm state for current comparison
+                    currentAlgorithmState = { i, j, minIndex, pass: i + 1 };
+                    captureState(`Comparing index ${j} with current minimum at ${minIndex}`);
+                    
                     drawBars(minIndex, j);
                     const cond = originalValues[j] < originalValues[minIndex];
+                    incrementComparisons(); // Track comparison
                     lastConditionDetail = `Is index ${j} value ${originalValues[j]} < current min index ${minIndex} value ${originalValues[minIndex]}? ${cond ? 'true' : 'false'}`;
                     updateMessage(`Comparing ${originalValues[j]} with current minimum ${originalValues[minIndex]}. Condition (a < min): ${cond ? 'true' : 'false'}.`);
                     await pause();
                     
                     if (data[j] < data[minIndex]) {
+                        // Capture state before updating minimum
+                        captureState(`New minimum found: ${originalValues[j]} at index ${j}`);
+                        
                         minIndex = j;
                         drawBars(minIndex, j);
                         updateMessage(`New minimum found: ${originalValues[minIndex]}`);
@@ -1433,8 +2950,12 @@ merge(array, left, mid, right):
                 }
                 
                 if (minIndex !== i) {
+                    // Capture state before swap
+                    captureState(`Before swap: ${originalValues[i]} and ${originalValues[minIndex]}`);
+                    
                     [data[i], data[minIndex]] = [data[minIndex], data[i]];
                     [originalValues[i], originalValues[minIndex]] = [originalValues[minIndex], originalValues[i]];
+                    incrementSwaps(); // Track swap
                     drawBars(i, minIndex);
                     updateMessage(`Swapping ${originalValues[i]} to position ${i}`);
                     await pause();
@@ -1443,52 +2964,94 @@ merge(array, left, mid, right):
             
             isSorting = false;
             stopBtn.disabled = true;
+            stopPerformanceTracking(); // Stop tracking performance metrics
             drawBars();
             updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+            updateStepButtons(); // Re-enable step buttons after sorting completes
         }
 
         async function quickSort() {
             isSorting = true;
             stopSorting = false;
             stopBtn.disabled = false;
+            clearHistory(); // Clear previous history when starting new sort
+            updateStepButtons();
+            startPerformanceTracking(); // Start tracking performance metrics
+            
+            // Capture initial state
+            captureState('Initial state');
+            highlightLine(0);
 
             async function partition(low, high) {
                 const pivot = data[high];
                 const pivotVal = originalValues[high];
                 let i = low - 1;
+                highlightLine(7);
+                highlightLine(8);
+                
+                // Capture state at start of partition
+                currentAlgorithmState = { low, high, pivot: pivotVal, i, partitioning: true };
+                captureState(`Partitioning range [${low}, ${high}] with pivot ${pivotVal}`);
                 
                 updateMessage(`Partitioning around pivot ${pivotVal}`);
                 await pause();
                 
+                highlightLine(9);
                 for (let j = low; j < high && !stopSorting; j++) {
+                    // Update algorithm state for current comparison
+                    currentAlgorithmState = { low, high, pivot: pivotVal, i, j, partitioning: true };
+                    captureState(`Comparing ${originalValues[j]} with pivot ${pivotVal}`);
+                    
                     drawBars(j, high);
                     const cond = originalValues[j] <= pivotVal;
+                    incrementComparisons(); // Track comparison
                     lastConditionDetail = `Is index ${j} value ${originalValues[j]} <= pivot ${pivotVal}? ${cond ? 'true' : 'false'}`;
                     updateMessage(`Comparing ${originalValues[j]} with pivot ${pivotVal}. Condition (a <= pivot): ${cond ? 'true' : 'false'}.`);
+                    highlightLine(10);
                     await pause();
                     
                     if (data[j] <= pivot) {
+                        highlightLine(11);
                         i++;
+                        // Capture state before swap
+                        captureState(`Before swap in partition: ${originalValues[i]} and ${originalValues[j]}`);
+                        
+                        highlightLine(12);
                         [data[i], data[j]] = [data[j], data[i]];
                         [originalValues[i], originalValues[j]] = [originalValues[j], originalValues[i]];
+                        incrementSwaps(); // Track swap
                         drawBars(i, j);
                         updateMessage(`Swapping elements: ${originalValues[i]} and ${originalValues[j]}`);
                         await pause();
                     }
                 }
                 
+                // Capture state before final pivot placement
+                captureState(`Placing pivot ${originalValues[high]} in final position ${i + 1}`);
+                highlightLine(13);
+                
                 [data[i + 1], data[high]] = [data[high], data[i + 1]];
                 [originalValues[i + 1], originalValues[high]] = [originalValues[high], originalValues[i + 1]];
+                incrementSwaps(); // Track pivot placement swap
                 drawBars(i + 1, high);
                 await pause();
                 
+                highlightLine(14);
                 return i + 1;
             }
 
             async function quickSortRecursive(low, high) {
+                highlightLine(1);
                 if (low < high && !stopSorting) {
+                    // Capture state before recursive call
+                    currentAlgorithmState = { low, high, recursive: true };
+                    captureState(`Recursively sorting range [${low}, ${high}]`);
+                    
+                    highlightLine(2);
                     const pi = await partition(low, high);
+                    highlightLine(3);
                     await quickSortRecursive(low, pi - 1);
+                    highlightLine(4);
                     await quickSortRecursive(pi + 1, high);
                 }
             }
@@ -1497,37 +3060,65 @@ merge(array, left, mid, right):
             
             isSorting = false;
             stopBtn.disabled = true;
+            stopPerformanceTracking(); // Stop tracking performance metrics
             drawBars();
             updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+            updateStepButtons(); // Re-enable step buttons after sorting completes
         }
 
         async function mergeSort() {
             isSorting = true;
             stopSorting = false;
             stopBtn.disabled = false;
+            clearHistory(); // Clear previous history when starting new sort
+            updateStepButtons();
+            startPerformanceTracking(); // Start tracking performance metrics
+            
+            // Capture initial state
+            captureState('Initial state');
+            highlightLine(0);
 
             async function merge(left, mid, right) {
+                highlightLine(7);
+                // Capture state at start of merge
+                currentAlgorithmState = { left, mid, right, merging: true };
+                captureState(`Merging ranges [${left}, ${mid}] and [${mid + 1}, ${right}]`);
+                
                 const leftArray = data.slice(left, mid + 1);
                 const rightArray = data.slice(mid + 1, right + 1);
                 const leftOriginal = originalValues.slice(left, mid + 1);
                 const rightOriginal = originalValues.slice(mid + 1, right + 1);
+                highlightLine(8);
+                highlightLine(9);
                 
                 let i = 0, j = 0, k = left;
                 
                 while (i < leftArray.length && j < rightArray.length && !stopSorting) {
+                    // Update algorithm state for current comparison
+                    currentAlgorithmState = { left, mid, right, i, j, k, merging: true };
+                    captureState(`Comparing ${leftOriginal[i]} with ${rightOriginal[j]} for position ${k}`);
+                    
                     drawBars(left + i, mid + 1 + j);
                     const cond = leftOriginal[i] <= rightOriginal[j];
+                    incrementComparisons(); // Track comparison
                     lastConditionDetail = `Compare left ${leftOriginal[i]} <= right ${rightOriginal[j]} ? ${cond ? 'true' : 'false'}`;
                     updateMessage(`Comparing ${leftOriginal[i]} with ${rightOriginal[j]}. Condition (left <= right): ${cond ? 'true' : 'false'}.`);
+                    highlightLine(10);
                     await pause();
                     
                     if (leftArray[i] <= rightArray[j]) {
+                        // Capture state before placing left element
+                        captureState(`Placing ${leftOriginal[i]} from left array at position ${k}`);
                         data[k] = leftArray[i];
                         originalValues[k] = leftOriginal[i];
+                        incrementSwaps(); // Track move operation
                         i++;
                     } else {
+                        // Capture state before placing right element
+                        captureState(`Placing ${rightOriginal[j]} from right array at position ${k}`);
                         data[k] = rightArray[j];
                         originalValues[k] = rightOriginal[j];
+                        incrementSwaps(); // Track move operation
                         j++;
                     }
                     drawBars(k);
@@ -1536,8 +3127,12 @@ merge(array, left, mid, right):
                 }
                 
                 while (i < leftArray.length && !stopSorting) {
+                    // Capture state before placing remaining left elements
+                    captureState(`Placing remaining left element ${leftOriginal[i]} at position ${k}`);
+                    highlightLine(10);
                     data[k] = leftArray[i];
                     originalValues[k] = leftOriginal[i];
+                    incrementSwaps(); // Track move operation
                     drawBars(k);
                     await pause();
                     i++;
@@ -1545,8 +3140,12 @@ merge(array, left, mid, right):
                 }
                 
                 while (j < rightArray.length && !stopSorting) {
+                    // Capture state before placing remaining right elements
+                    captureState(`Placing remaining right element ${rightOriginal[j]} at position ${k}`);
+                    highlightLine(10);
                     data[k] = rightArray[j];
                     originalValues[k] = rightOriginal[j];
+                    incrementSwaps(); // Track move operation
                     drawBars(k);
                     await pause();
                     j++;
@@ -1555,13 +3154,23 @@ merge(array, left, mid, right):
             }
 
             async function mergeSortRecursive(left, right) {
+                highlightLine(1);
                 if (left < right && !stopSorting) {
                     const mid = Math.floor((left + right) / 2);
+                    
+                    // Capture state before recursive division
+                    currentAlgorithmState = { left, right, mid, dividing: true };
+                    captureState(`Dividing range [${left}, ${right}] at midpoint ${mid}`);
+                    
                     updateMessage(`Dividing array from index ${left} to ${right}`);
+                    highlightLine(2);
                     await pause();
                     
+                    highlightLine(3);
                     await mergeSortRecursive(left, mid);
+                    highlightLine(4);
                     await mergeSortRecursive(mid + 1, right);
+                    highlightLine(5);
                     await merge(left, mid, right);
                 }
             }
@@ -1570,8 +3179,10 @@ merge(array, left, mid, right):
             
             isSorting = false;
             stopBtn.disabled = true;
+            stopPerformanceTracking(); // Stop tracking performance metrics
             drawBars();
             updateMessage(stopSorting ? "Sorting stopped!" : "Sorting complete!");
+            updateStepButtons(); // Re-enable step buttons after sorting completes
         }
 
         // Insert method algorithm with enhanced visualization
@@ -1788,6 +3399,9 @@ merge(array, left, mid, right):
             pauseBtn.textContent = 'Pause';
             isPaused = false;
             
+            // Disable step buttons during sorting
+            updateStepButtons();
+            
             if (selectedAlgorithm === 'bubbleSort') {
                 await bubbleSort();
             } else if (selectedAlgorithm === 'insertionSort') {
@@ -1806,7 +3420,10 @@ merge(array, left, mid, right):
                 await insertMethod();
             } else if (selectedAlgorithm === 'deleteMethod') {
                 await deleteMethod();
-            // DFS and BFS pathfinding algorithms have been removed
+            } else if (selectedAlgorithm === 'dijkstra') {
+                await dijkstra();
+            } else if (selectedAlgorithm === 'astar') {
+                await astar();
             } else if (selectedAlgorithm === 'treeDfs') {
                 await treeDfsTraversal();
             } else if (selectedAlgorithm === 'treeBfs') {
@@ -1819,6 +3436,9 @@ merge(array, left, mid, right):
             startBtn.disabled = false;
             exampleDataBtn.disabled = false;
             pauseBtn.disabled = true;
+            
+            // Re-enable step buttons after sorting
+            updateStepButtons();
         });
 
         pauseBtn.addEventListener('click', ()=>{
@@ -1835,13 +3455,34 @@ merge(array, left, mid, right):
                 // reset pause state
                 isPaused = false;
                 if (pauseBtn) { pauseBtn.textContent = 'Pause'; pauseBtn.disabled = true; }
+                
+                // Re-enable step buttons after stopping
+                setTimeout(() => updateStepButtons(), 100);
             }
         });
+
+        // Event listeners for step control buttons
+        if (stepBackwardBtn) {
+            stepBackwardBtn.addEventListener('click', () => {
+                if (!isSorting && stepBackward()) {
+                    updateMessage("Stepped backward");
+                }
+            });
+        }
+
+        if (stepForwardBtn) {
+            stepForwardBtn.addEventListener('click', () => {
+                if (!isSorting && stepForward()) {
+                    updateMessage("Stepped forward");
+                }
+            });
+        }
 
         exampleDataBtn.addEventListener('click', () => {
             if (!isSorting) {
                 useExampleData = true;
                 initializeData();
+                updateMessage("Example data loaded!");
             }
         });
 
@@ -1866,6 +3507,60 @@ merge(array, left, mid, right):
                         await binarySearch();
                     }
                 }
+            });
+        }
+
+        // Pathfinding control event listeners
+        const clearGridBtn = document.getElementById('clear-grid');
+        const randomizeWallsBtn = document.getElementById('randomize-walls');
+        const drawingModeSelect = document.getElementById('drawing-mode');
+
+        if (clearGridBtn) {
+            clearGridBtn.addEventListener('click', () => {
+                if (!isSorting) {
+                    clearGrid();
+                    updateMessage("Grid cleared!");
+                }
+            });
+        }
+
+        if (randomizeWallsBtn) {
+            randomizeWallsBtn.addEventListener('click', () => {
+                if (!isSorting) {
+                    randomizeWalls();
+                    updateMessage("Walls randomized!");
+                }
+            });
+        }
+
+        if (drawingModeSelect) {
+            drawingModeSelect.addEventListener('change', (e) => {
+                currentDrawingMode = e.target.value;
+                updateMessage(`Drawing mode: ${e.target.value}`);
+            });
+        }
+
+        // Grid canvas mouse interaction
+        if (gridCanvas) {
+            gridCanvas.addEventListener('click', handleGridClick);
+            
+            gridCanvas.addEventListener('mousedown', (e) => {
+                isMouseDown = true;
+                handleGridClick(e);
+            });
+            
+            gridCanvas.addEventListener('mousemove', (e) => {
+                if (isMouseDown) {
+                    handleGridClick(e);
+                }
+            });
+            
+            gridCanvas.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
+            
+            gridCanvas.addEventListener('mouseleave', () => {
+                isMouseDown = false;
             });
         }
 
@@ -1907,7 +3602,11 @@ merge(array, left, mid, right):
             }
         }
 
-        window.onload = initializeData;
+        window.onload = function() {
+            initializeData();
+            updateStepButtons();
+            loadComparisonData(); // Load existing comparison data
+        };
 
         // Explanation functions for sidebar buttons
         function showAlgorithmExplanation() {
@@ -2104,5 +3803,72 @@ merge(array, left, mid, right):
       window.addEventListener('focus', ()=> body.classList.add('water-cursor-enabled'));
     })();
   </script>
+
+  <!-- Comparison Toggle Button -->
+  <div class="comparison-toggle">
+    <button class="comparison-btn" onclick="toggleComparisonPanel()">
+      📊 Compare Algorithms
+    </button>
+  </div>
+
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="summary-modal">
+    <div class="summary-content">
+      <div class="summary-header">
+        <h2 class="summary-title">🎉 Algorithm Complete!</h2>
+        <p class="summary-algorithm" id="summaryAlgorithmName">Bubble Sort</p>
+      </div>
+      
+      <div class="summary-grid">
+        <div class="summary-metric">
+          <div class="summary-metric-label">Input Size (N)</div>
+          <div class="summary-metric-value" id="summaryInputSize">0</div>
+        </div>
+        <div class="summary-metric">
+          <div class="summary-metric-label">Comparisons</div>
+          <div class="summary-metric-value" id="summaryComparisons">0</div>
+        </div>
+        <div class="summary-metric">
+          <div class="summary-metric-label">Swaps/Moves</div>
+          <div class="summary-metric-value" id="summarySwaps">0</div>
+        </div>
+        <div class="summary-metric">
+          <div class="summary-metric-label">Time (ms)</div>
+          <div class="summary-metric-value" id="summaryTime">0</div>
+        </div>
+      </div>
+      
+      <div class="summary-actions">
+        <button class="summary-btn summary-btn-primary" onclick="addToComparison()">
+          📊 Add to Comparison
+        </button>
+        <button class="summary-btn summary-btn-secondary" onclick="runAgain()">
+          🔄 Run Again
+        </button>
+        <button class="summary-btn summary-btn-secondary" onclick="closeSummary()">
+          ✖️ Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Panel -->
+  <div id="comparisonPanel" class="comparison-panel">
+    <div class="comparison-header">
+      Algorithm Comparison
+      <button style="float: right; background: none; border: none; color: #9C27B0; font-size: 1.2em; cursor: pointer;" onclick="toggleComparisonPanel()">✖️</button>
+    </div>
+    <div id="comparisonList">
+      <p style="color: #a0a0a0; text-align: center; margin: 50px 0;">
+        No algorithms compared yet.<br>
+        Run algorithms and add them to comparison!
+      </p>
+    </div>
+    <div style="margin-top: 20px; text-align: center;">
+      <button class="summary-btn summary-btn-secondary" onclick="clearComparisons()" style="width: 100%;">
+        🗑️ Clear All
+      </button>
+    </div>
+  </div>
 </body>
 </html>

@@ -4,17 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brainware 🧠 Algorithms</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>"">
     <style>
+        :root {
+            /* Dark theme colors (default) */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #0d0d0d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-accent: #00ffff;
+            --border-primary: #00ffff;
+            --border-secondary: #00b8c4;
+            --shadow-primary: rgba(0, 255, 255, 0.1);
+            --shadow-secondary: rgba(0, 255, 255, 0.3);
+            --shadow-glow: rgba(0, 255, 255, 0.35);
+            --button-bg: #222;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+        }
+        
+        [data-theme="light"] {
+            /* Light theme colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #fafafa;
+            --text-primary: #212121;
+            --text-secondary: #666666;
+            --text-accent: #1976d2;
+            --border-primary: #1976d2;
+            --border-secondary: #2196f3;
+            --shadow-primary: rgba(25, 118, 210, 0.1);
+            --shadow-secondary: rgba(25, 118, 210, 0.3);
+            --shadow-glow: rgba(25, 118, 210, 0.35);
+            --button-bg: #e3f2fd;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+        }
+        
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             margin: 0;
             padding: 20px;
-            cursor: url('cursors/neon-dragon.ani'), url('cursors/neon-dragon.cur'), auto;
+            cursor: auto;
         }
         .logo {
             position: absolute;
@@ -26,7 +61,7 @@
             opacity: 1;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(0,255,255,0.65);
+            border: 2px solid var(--border-primary);
             filter: contrast(1.22) saturate(1.15) brightness(1.06);
             background-color: transparent;
             user-select: none;
@@ -44,8 +79,8 @@
             font-weight: 800;
             font-size: 28px;
             letter-spacing: 2px;
-            color: #e6ffff;
-            text-shadow: 0 2px 10px rgba(0, 255, 255, 0.35), 0 0 2px #003c3c;
+            color: var(--text-accent);
+            text-shadow: 0 2px 10px var(--shadow-glow), 0 0 2px var(--bg-tertiary);
             pointer-events: none;
             user-select: none;
         }
@@ -60,7 +95,7 @@
             }
         }
         h1 {
-            color: #00ffff;
+            color: var(--text-accent);
             text-shadow: 
                 0 0 10px #00ffff,
                 0 0 20px #00ffff,
@@ -81,33 +116,33 @@
             padding: 20px;
         }
         .algorithm-card {
-            background-color: #1e1e1e;
-            border: 2px solid #00ffff;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
             border-radius: 10px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px var(--shadow-primary);
         }
         .algorithm-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px var(--shadow-secondary);
         }
         .algorithm-name {
             font-size: 1.5em;
-            color: #00ffff;
+            color: var(--text-accent);
             margin-bottom: 10px;
         }
         .algorithm-description {
-            color: #a0a0a0;
+            color: var(--text-secondary);
             font-size: 0.9em;
             line-height: 1.4;
         }
         a {
             text-decoration: none;
         }
-        a, button, [role="button"], .explanation-btn, .category-btn { cursor: url('cursors/neon-dragon.ani'), url('cursors/neon-dragon.cur'), pointer; }
+        a, button, [role="button"], .explanation-btn, .category-btn { cursor: pointer; }
 
         /* Disable custom black hole cursor visuals to use system neon dragon theme */
         body.blackhole-cursor { cursor: auto; }
@@ -139,13 +174,154 @@
         .category-btn{
             padding:8px 14px;
             border-radius:8px;
-            background:#222;
-            color:#e0e0e0;
-            border:1px solid #00b8c4;
+            background:var(--button-bg);
+            color:var(--text-primary);
+            border:1px solid var(--border-secondary);
             cursor:pointer;
             box-shadow:0 0 8px rgba(0,184,196,0.06);
         }
-        .category-btn.active{ background:#00ffff;color:#121212;box-shadow:0 0 14px rgba(0,255,255,0.16); }
+        .category-btn.active{ background:var(--text-accent);color:var(--bg-primary);box-shadow:0 0 14px var(--shadow-primary); }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 30px;
+            background: var(--button-bg);
+            border: 2px solid var(--border-secondary);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            z-index: 1001;
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: 0 0 10px var(--shadow-primary);
+        }
+        
+        .theme-toggle-slider {
+            width: 24px;
+            height: 24px;
+            background: var(--text-accent);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        [data-theme="light"] .theme-toggle-slider {
+            transform: translateX(28px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+                left: 10px;
+            }
+            
+            .brand-label {
+                left: 100px;
+                font-size: 18px;
+                top: 20px;
+            }
+            
+            .text-logo {
+                margin: 10px 0;
+                text-align: center;
+            }
+            
+            .logo-text, .logo-algo {
+                font-size: 1.5em;
+            }
+            
+            .logo-brain {
+                font-size: 2em;
+            }
+            
+            .algorithm-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 10px;
+                max-width: 100%;
+            }
+            
+            .algorithm-card {
+                padding: 15px;
+            }
+            
+            .algorithm-name {
+                font-size: 1.3em;
+            }
+            
+            .category-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+            
+            .category-btn {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 50px;
+                height: 25px;
+            }
+            
+            .theme-toggle-slider {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+            }
+            
+            [data-theme="light"] .theme-toggle-slider {
+                transform: translateX(23px);
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .algorithm-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 5px;
+            }
+            
+            .algorithm-card {
+                padding: 12px;
+            }
+            
+            .brand-label {
+                display: none;
+            }
+            
+            .logo {
+                position: relative;
+                left: auto;
+                margin-bottom: 10px;
+            }
+        }
         
         /* Explanation button and modal styles */
         .explanation-btn {
@@ -178,6 +354,50 @@
             position: relative;
         }
         
+        .comparison-card {
+            background: linear-gradient(135deg, #9C27B0 0%, #673AB7 100%);
+            border: 2px solid #E91E63;
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
+            text-align: center;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .comparison-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(233, 30, 99, 0.5);
+        }
+        
+        .comparison-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .comparison-subtitle {
+            font-size: 1.1em;
+            color: #f0f0f0;
+            margin-bottom: 20px;
+        }
+        
+        .comparison-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .comparison-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -186,19 +406,19 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: var(--modal-bg);
             backdrop-filter: blur(5px);
         }
         
         .modal-content {
-            background-color: #1e1e1e;
+            background-color: var(--bg-secondary);
             margin: 5% auto;
             padding: 30px;
-            border: 2px solid #00ffff;
+            border: 2px solid var(--border-primary);
             border-radius: 15px;
             width: 80%;
             max-width: 600px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 30px var(--shadow-secondary);
             position: relative;
             animation: modalSlideIn 0.3s ease-out;
         }
@@ -227,26 +447,26 @@
         }
         
         .close:hover {
-            color: #00ffff;
+            color: var(--text-accent);
         }
         
         .modal h2 {
-            color: #00ffff;
+            color: var(--text-accent);
             margin-top: 0;
             margin-bottom: 20px;
             font-size: 1.8em;
-            text-shadow: 0 0 5px #00ffff;
+            text-shadow: 0 0 5px var(--text-accent);
         }
         
         .modal p {
-            color: #e0e0e0;
+            color: var(--text-primary);
             line-height: 1.6;
             margin-bottom: 15px;
             font-size: 1.1em;
         }
         
         .modal .complexity-info {
-            background: #0d0d0d;
+            background: var(--bg-tertiary);
             padding: 15px;
             border-radius: 8px;
             border: 1px solid #333;
@@ -286,13 +506,13 @@
         .logo-text {
             font-size: 2.2em;
             font-weight: 700;
-            color: #00ffff;
+            color: var(--text-accent);
         }
 
         .logo-algo {
             font-size: 2.2em;
             font-weight: 600;
-            color: #e0e0e0;
+            color: var(--text-primary);
         }
         
         @keyframes brainPulse {
@@ -482,8 +702,13 @@
     <img class="logo" src="brain.jpg.jpg" alt="BrainWare Logo" width="60" height="60" />
     <!-- Neon Black Hole Cursor container -->
     <div id="bhCursor" class="bh-cursor" aria-hidden="true"><div class="bh-ring"></div></div>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <div class="theme-toggle-slider">🌙</div>
+    </button>
+    
     <div class="text-logo">
-        <span class="logo-text">Brain-Ware<span class="logo-brain">🧠</span>Algorithms</span>
+        <span class="logo-text">Algorithms</span>
         
     </div>
     <h1>Algorithms</h1>
@@ -492,9 +717,12 @@
         <button class="category-btn" data-category="sorting">Sorting</button>
         <button class="category-btn" data-category="search">Search</button>
         <button class="category-btn" data-category="datamanipulation">Data Manipulation</button>
+        <button class="category-btn" data-category="pathfinding">Pathfinding</button>
     </div>
 
+
     <div class="algorithm-grid">
+        <!-- Bubble Sort - Left -->
         <a href="visualizer.html?algorithm=bubbleSort" data-category="sorting">
             <div class="algorithm-card">
                 <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('bubbleSort')">*</button>
@@ -506,17 +734,7 @@
             </div>
         </a>
         
-        <a href="visualizer.html?algorithm=insertionSort" data-category="sorting">
-            <div class="algorithm-card">
-                <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('insertionSort')">*</button>
-                <div class="algorithm-name">Insertion Sort</div>
-                <div class="algorithm-description">
-                    Builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array.
-                </div>
-                
-            </div>
-        </a>
-        
+        <!-- Selection Sort - Right -->
         <a href="visualizer.html?algorithm=selectionSort" data-category="sorting">
             <div class="algorithm-card">
                 <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('selectionSort')">*</button>
@@ -528,6 +746,19 @@
             </div>
         </a>
         
+        <!-- Insertion Sort -->
+        <a href="visualizer.html?algorithm=insertionSort" data-category="sorting">
+            <div class="algorithm-card">
+                <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('insertionSort')">*</button>
+                <div class="algorithm-name">Insertion Sort</div>
+                <div class="algorithm-description">
+                    Builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array.
+                </div>
+                
+            </div>
+        </a>
+        
+        <!-- Quick Sort -->
         <a href="visualizer.html?algorithm=quickSort" data-category="sorting">
             <div class="algorithm-card">
                 <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('quickSort')">*</button>
@@ -539,6 +770,7 @@
             </div>
         </a>
         
+        <!-- Merge Sort - Below Insertion Sort -->
         <a href="visualizer.html?algorithm=mergeSort" data-category="sorting">
             <div class="algorithm-card">
                 <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('mergeSort')">*</button>
@@ -612,6 +844,26 @@
                 </div>
             </div>
         </a>
+
+        <a href="visualizer.html?algorithm=dijkstra" data-category="pathfinding">
+            <div class="algorithm-card">
+                <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('dijkstra')">*</button>
+                <div class="algorithm-name">Dijkstra's Algorithm</div>
+                <div class="algorithm-description">
+                    Finds the shortest path between nodes in a weighted graph using a greedy approach with a priority queue.
+                </div>
+            </div>
+        </a>
+
+        <a href="visualizer.html?algorithm=astar" data-category="pathfinding">
+            <div class="algorithm-card">
+                <button class="explanation-btn" onclick="event.preventDefault(); showExplanation('astar')">*</button>
+                <div class="algorithm-name">A* Search</div>
+                <div class="algorithm-description">
+                    An informed search algorithm that uses heuristics to find the optimal path more efficiently than Dijkstra's.
+                </div>
+            </div>
+        </a>
     </div>
 
     <!-- Explanation Modal -->
@@ -623,8 +875,84 @@
         </div>
     </div>
 
+    <!-- Dual Comparison Card - Bottom Section -->
+    <a href="dual-comparison.html" style="text-decoration: none; color: inherit;">
+        <div class="comparison-card"> 
+            <div class="comparison-title">⚡ Dual Algorithm Comparison</div> 
+            <div class="comparison-subtitle">Run two algorithms side-by-side with synchronized visualization</div> 
+            <div class="comparison-features"> 
+                <div class="comparison-feature"> 
+                    <span>🔄</span> 
+                    <span>Synchronized Execution</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>📊</span> 
+                    <span>Real-time Metrics</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>🏆</span> 
+                    <span>Performance Winner</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>⚖️</span> 
+                    <span>Split Screen View</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>📝</span> 
+                    <span>Custom Data Input</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>🎲</span> 
+                    <span>Random Data Generation</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>⚙️</span> 
+                    <span>Adjustable Speed Control</span> 
+                </div> 
+                <div class="comparison-feature"> 
+                    <span>📈</span> 
+                    <span>Performance Analytics</span> 
+                </div> 
+            </div> 
+        </div>
+    </a>
+
 </body>
 <script>
+// Theme Management
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const html = document.documentElement;
+    const slider = document.querySelector('.theme-toggle-slider');
+    
+    if (savedTheme === 'light') {
+        html.setAttribute('data-theme', 'light');
+        slider.textContent = '☀️';
+    } else {
+        html.removeAttribute('data-theme');
+        slider.textContent = '🌙';
+    }
+}
+
+function toggleTheme() {
+    const html = document.documentElement;
+    const slider = document.querySelector('.theme-toggle-slider');
+    const currentTheme = html.getAttribute('data-theme');
+    
+    if (currentTheme === 'light') {
+        html.removeAttribute('data-theme');
+        slider.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        html.setAttribute('data-theme', 'light');
+        slider.textContent = '☀️';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Initialize theme on page load
+document.addEventListener('DOMContentLoaded', initializeTheme);
+
 // Category filter for landing page
 (function(){
     const buttons = Array.from(document.querySelectorAll('.category-btn'));
@@ -804,6 +1132,30 @@ const algorithmExplanations = {
             worst: "O(n) - For complete binary trees"
         },
         useCases: "Tree BFS is used for level-order traversal, finding the shortest path in trees, printing tree levels, and when you need to process nodes by their distance from the root."
+    },
+    dijkstra: {
+        title: "Dijkstra's Algorithm",
+        description: "Dijkstra's algorithm is a graph search algorithm that finds the shortest path between nodes in a weighted graph. It uses a greedy approach with a priority queue to always explore the most promising node next.",
+        howItWorks: "The algorithm maintains a set of unvisited nodes and assigns tentative distances to every node. It starts with the source node (distance 0) and infinity for all others. It repeatedly selects the unvisited node with the smallest distance, examines its neighbors, and updates their distances if a shorter path is found.",
+        complexity: {
+            time: "O((V + E) log V) - Using a binary heap priority queue",
+            space: "O(V) - For storing distances and visited nodes",
+            best: "O(V log V) - Sparse graphs",
+            worst: "O(E log V) - Dense graphs"
+        },
+        useCases: "Dijkstra's is used in GPS navigation systems, network routing protocols, social network analysis, and any scenario requiring shortest path in weighted graphs."
+    },
+    astar: {
+        title: "A* Search Algorithm",
+        description: "A* (A-star) is an informed search algorithm that finds the optimal path from a start node to a goal node. It uses a heuristic function to guide the search, making it more efficient than Dijkstra's algorithm.",
+        howItWorks: "A* combines the actual cost from the start (g-score) with a heuristic estimate to the goal (h-score) to get an f-score (f = g + h). It explores nodes with the lowest f-score first, using the heuristic to guide the search toward the goal more efficiently.",
+        complexity: {
+            time: "O(b^d) - Where b is branching factor and d is depth",
+            space: "O(b^d) - For storing the open and closed sets",
+            best: "O(d) - With perfect heuristic",
+            worst: "O(b^d) - With poor heuristic"
+        },
+        useCases: "A* is used in video game pathfinding, robotics navigation, puzzle solving, and any scenario where you need optimal pathfinding with good performance."
     }
 };
 
@@ -882,6 +1234,13 @@ window.onclick = function(event) {
   window.addEventListener('blur', ()=> body.classList.remove('blackhole-cursor'));
   window.addEventListener('focus', ()=> body.classList.add('blackhole-cursor'));
 })();
+
+// Initialize theme after DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTheme);
+} else {
+    initializeTheme();
+}
 </script>
 
 <!-- Magical Cursor Script removed -->
