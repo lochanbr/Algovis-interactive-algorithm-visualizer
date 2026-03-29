@@ -1,113 +1,152 @@
-🎯 Overview
-Algo Vis transforms abstract algorithmic concepts into tangible, step-by-step visual demonstrations. Watch sorting and searching algorithms execute in real-time, control their playback, and gain intuitive understanding of computational processes that power modern computing.
-✨ Features
+# Algovis - Interactive Algorithm Visualizer
 
-Real-Time Algorithm Animation: Watch algorithms execute step by step with smooth, clear visualizations
-Interactive Playback Controls: Play, pause, and step through algorithm execution at your own pace
-Multiple Algorithms: Visualize core sorting and searching algorithms including:
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/lochanbr/Algovis-interactive-algorithm-visualizer?style=social)](https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer/stargazers)
 
-1.Bubble Sort
-2.Insertion Sort
-3.Selection Sort
-4.Quick Sort
-5.Merge Sort
-6.Linear Search     
-7.Binary Search
-8.Insert Method
-9.Delete Method 
-10.DFS Traversal
-11.BFS Traversal                                                                                                                                                                                                                                                                                        Adjustable Parameters: Modify input size and animation speed for experimentation
-Educational Insights:
+## 🎯 Project Overview
 
-Clear algorithm descriptions
-Pseudocode representations
-Time and space complexity analysis
+`Algovis` is a browser-based educational tool that makes algorithm concepts concrete through animated visualizations and step-by-step execution. It supports core sorting, searching, and graph traversal algorithms with controls, pseudocode, and complexity analysis.
 
+### Why use Algovis?
+- Learn algorithm behavior visually with real-time steps
+- Interact with the execution via play/pause/step controls
+- Compare algorithms under the same input and speed settings
+- No install or backend required: open directly in a web browser
 
-User-Friendly Interface: Clean, intuitive design focused on learning effectiveness
-Fully Browser-Based: No installation required—runs entirely in your web browser
+## ✨ Features
 
-🚀 Getting Started
-Prerequisites
+- Algorithm visualizations in real-time
+- Play, pause, step-forward, and reset controls
+- Adjustable input size, data randomization, and animation speed
+- Pseudocode for each algorithm (async with trace)
+- Time complexity & space complexity guidance
+- Responsive UI built for clean learning
 
-A modern web browser (Chrome, Firefox, Safari, or Edge)
-No additional dependencies or installations required
+## 🧠 Algorithms
 
-Installation
+### Sorting
+- Bubble Sort
+- Insertion Sort
+- Selection Sort
+- Quick Sort
+- Merge Sort
 
-Clone the repository:
+### Searching
+- Linear Search
+- Binary Search
 
-bash   git clone https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer.git
+### Array operations (in UI flow)
+- Insert element
+- Delete element
 
-Navigate to the project directory:
+### Graph traversal
+- BFS (Breadth-First Search)
+- DFS (Depth-First Search)
 
-bash   cd Algovis-interactive-algorithm-visualizer
+## 🚀 Getting Started
 
-Open index.html in your web browser:
+### Prerequisites
+- Modern browser (Chrome, Firefox, Edge, Safari)
+- Optional: Git for cloning
 
-bash   # On macOS
-   open index.html
-   
-   # On Linux
-   xdg-open index.html
-   
-   # On Windows
-   start index.html
-Or simply drag and drop the index.html file into your browser.
-🎮 Usage
+### 1. Clone repository
 
-Select an Algorithm: Choose from the available sorting or searching algorithms
-Configure Parameters: Adjust array size and animation speed using the provided controls
-Start Visualization: Click the "Play" button to watch the algorithm execute
-Control Playback: Use play/pause and step controls to explore at your own pace
-Learn: Read the algorithm description, pseudocode, and complexity analysis while watching
+```bash
+git clone https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer.git
+cd Algovis-interactive-algorithm-visualizer
+```
 
-🏗 Project Structure
-algo-vis/
-├── index.html          # Main HTML file
-├── css/
-│   └── styles.css      # Styling and layout
+### 2. Open locally
+
+#### Windows
+```bash
+start index.html
+```
+#### macOS
+```bash
+open index.html
+```
+#### Linux
+```bash
+xdg-open index.html
+```
+
+or drag `index.html` into the browser.
+
+## 🎮 Usage
+
+1. Select algorithm from dropdown.
+2. Set input size and animation speed.
+3. Click **Generate array** to reinitialize sample data.
+4. Use **Play**, **Pause**, **Step**, **Reset** controls.
+5. Review pseudocode and complexity values while visualizing.
+
+## 🏗 Project Structure
+
+```
+./
+├── index.html                # Landing page + visualizer UI
+├── comparison.html           # Algorithm comparison view
+├── dual-comparison.html      # Side-by-side comparison mode
+├── visualizer.html           # Visualizer core layout
 ├── js/
-│   ├── main.js         # Application entry point
-│   ├── algorithms/     # Algorithm implementations
-│   ├── visualizer.js   # Visualization engine
-│   └── controls.js     # UI control handlers
-├── assets/             # Images and icons
-└── README.md           # Project documentation
-🎓 Educational Goals
-Algo Vis is designed to help learners:
+│   ├── main.js              # Main controller
+│   ├── algorithms/          # Sorting/search/traversal code
+│   ├── visualizer.js        # DOM/render engine
+│   └── controls.js          # Input & controls logic
+├── css/
+│   └── styles.css           # Styling
+├── assets/                  # Icons, screenshots, assets
+└── README.md
+```
 
-Understand how algorithms transform data step by step
-Compare different algorithmic approaches and their efficiency
-Internalize concepts like time complexity, space complexity, and algorithmic flow
-Experiment with different input sizes and scenarios
-Retain knowledge through interactive, hands-on exploration
+## 🛠 Tech Stack & Architecture
 
-🛠 Technical Details
+- HTML5 + CSS3 + JavaScript (ES6+)
+- Modular JS architecture (logic, renderer, algorithms separated)
+- Timer-based animation loop, clear state transitions
+- Focused on readability and minimal dependencies
 
-Frontend: Pure JavaScript (ES6+), HTML5, CSS3
-Visualization: Canvas API or DOM-based animations
-Architecture: Modular design with separation of concerns
-Performance: Optimized for smooth animations across devices
-Accessibility: Compatible with modern browsers and standard devices
+## 🎓 Learning Outcomes
 
-🤝 Contributing
-We welcome contributions from the community! Whether you want to add new algorithms, improve visualizations, or fix bugs, your help is appreciated.
-How to Contribute
+- Step-by-step data transformation for each algorithm
+- Visual comparison of O(n²) vs O(n log n) behavior
+- Graph traversal order and queue/stack behavior
+- Algorithmic tradeoffs and complexity reasoning
 
-Fork the repository
-Create a feature branch (git checkout -b feature/AmazingFeature)
-Commit your changes (git commit -m 'Add some AmazingFeature')
-Push to the branch (git push origin feature/AmazingFeature)
-Open a Pull Request
+## 🤝 Contributing
 
-Inspired by the need to make algorithm education more accessible and engaging
-Built with the goal of helping students visualize and understand core CS concepts
-Special thanks to all contributors and the open-source community
+Contributions are welcome!
 
-📧 Contact
-Project Maintainer: lochanbr
-Project Link: https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer.git
+1. Fork
+2. `git checkout -b feature/your-feature`
+3. `git commit -m "Add ..."`
+4. `git push origin feature/your-feature`
+5. Open PR
 
-Happy Learning! 🎉
-If you find this project helpful, please consider giving it a ⭐ on GitHub!
+### Ideas
+- Add more algorithms (heap sort, quickselect, dijkstra)
+- Add dark mode
+- Improve accessibility (ARIA labels, keyboard nav)
+- Add path highlighting and result summaries
+
+## 🧪 Testing
+
+No test framework included; manual validation in-browser.
+
+### Quick manual test
+- Open app; verify algorithm selection works
+- Adjust speed and size; verify animation updates
+- Step through algorithms; verify correctness and state
+
+## 📄 License
+
+MIT License. See `LICENSE`.
+
+## 📧 Contact
+
+- Maintainer: `lochanbr`
+- Repo: https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer
+
+> ⭐ If this project helped you, please star it on GitHub!
+
