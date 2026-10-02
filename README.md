@@ -1,152 +1,134 @@
-# Algovis - Interactive Algorithm Visualizer
+# Algovis — Interactive Algorithm Visualizer
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/lochanbr/Algovis-interactive-algorithm-visualizer?style=social)](https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer/stargazers)
+Algovis is a browser-based educational tool for learning algorithms through interactive, animated visualizations. Explore how algorithms work step by step, inspect their complexity, and compare different approaches using a clean visual interface.
 
-## 🎯 Project Overview
+## 🚀 Live Demo
 
-`Algovis` is a browser-based educational tool that makes algorithm concepts concrete through animated visualizations and step-by-step execution. It supports core sorting, searching, and graph traversal algorithms with controls, pseudocode, and complexity analysis.
-
-### Why use Algovis?
-- Learn algorithm behavior visually with real-time steps
-- Interact with the execution via play/pause/step controls
-- Compare algorithms under the same input and speed settings
-- No install or backend required: open directly in a web browser
+[Open Algovis](https://algovis-interactive-algorithm-visua.vercel.app)
 
 ## ✨ Features
 
-- Algorithm visualizations in real-time
-- Play, pause, step-forward, and reset controls
-- Adjustable input size, data randomization, and animation speed
-- Pseudocode for each algorithm (async with trace)
-- Time complexity & space complexity guidance
-- Responsive UI built for clean learning
+- Interactive algorithm visualizations
+- Step-by-step execution with animation controls
+- Play, pause, reset, and speed controls
+- Random or custom data input
+- Dark and light themes
+- Algorithm categories for easier navigation
+- Explanations and time/space complexity information
+- Side-by-side algorithm comparison
+- Responsive design for desktop and mobile browsers
 
-## 🧠 Algorithms
+## 🧠 Supported Algorithms
 
 ### Sorting
+
 - Bubble Sort
-- Insertion Sort
 - Selection Sort
+- Insertion Sort
 - Quick Sort
 - Merge Sort
 
 ### Searching
+
 - Linear Search
 - Binary Search
 
-### Array operations (in UI flow)
-- Insert element
-- Delete element
+### Data Manipulation and Traversal
 
-### Graph traversal
-- BFS (Breadth-First Search)
-- DFS (Depth-First Search)
+- Insert operation
+- Delete operation
+- Breadth-First Search (BFS)
+- Depth-First Search (DFS)
 
-## 🚀 Getting Started
+### Pathfinding
+
+- Dijkstra's Algorithm
+- A* Search
+
+## 📁 Project Pages
+
+- `index.html` — Main algorithm selection page
+- `visualizer.html` — Interactive algorithm visualizer
+- `comparison.html` — Algorithm comparison page
+- `dual-comparison.html` — Side-by-side comparison mode
+- `brain.jpg.jpg` — Project branding image
+
+## 🛠️ Technologies
+
+- HTML5
+- CSS3
+- JavaScript
+- Node.js `http-server` for local development
+
+## 💻 Run Locally
 
 ### Prerequisites
-- Modern browser (Chrome, Firefox, Edge, Safari)
-- Optional: Git for cloning
 
-### 1. Clone repository
+- A modern web browser
+- Node.js and npm (recommended for the local server)
+
+### Installation
 
 ```bash
 git clone https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer.git
 cd Algovis-interactive-algorithm-visualizer
+npm install
 ```
 
-### 2. Open locally
+### Start the application
 
-#### Windows
 ```bash
-start index.html
-```
-#### macOS
-```bash
-open index.html
-```
-#### Linux
-```bash
-xdg-open index.html
+npm start
 ```
 
-or drag `index.html` into the browser.
+Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## 🎮 Usage
+You can also open `index.html` directly in a browser, although using the local server is recommended.
 
-1. Select algorithm from dropdown.
-2. Set input size and animation speed.
-3. Click **Generate array** to reinitialize sample data.
-4. Use **Play**, **Pause**, **Step**, **Reset** controls.
-5. Review pseudocode and complexity values while visualizing.
+## 🎮 How to Use
 
-## 🏗 Project Structure
-
-```
-./
-├── index.html                # Landing page + visualizer UI
-├── comparison.html           # Algorithm comparison view
-├── dual-comparison.html      # Side-by-side comparison mode
-├── visualizer.html           # Visualizer core layout
-├── js/
-│   ├── main.js              # Main controller
-│   ├── algorithms/          # Sorting/search/traversal code
-│   ├── visualizer.js        # DOM/render engine
-│   └── controls.js          # Input & controls logic
-├── css/
-│   └── styles.css           # Styling
-├── assets/                  # Icons, screenshots, assets
-└── README.md
-```
-
-## 🛠 Tech Stack & Architecture
-
-- HTML5 + CSS3 + JavaScript (ES6+)
-- Modular JS architecture (logic, renderer, algorithms separated)
-- Timer-based animation loop, clear state transitions
-- Focused on readability and minimal dependencies
-
-## 🎓 Learning Outcomes
-
-- Step-by-step data transformation for each algorithm
-- Visual comparison of O(n²) vs O(n log n) behavior
-- Graph traversal order and queue/stack behavior
-- Algorithmic tradeoffs and complexity reasoning
+1. Open the application.
+2. Select an algorithm category or algorithm card.
+3. Configure the input data and animation speed.
+4. Start the visualization.
+5. Use the available controls to pause, reset, or step through execution.
+6. Review the algorithm explanation and complexity information.
+7. Use the comparison pages to evaluate algorithms side by side.
 
 ## 🤝 Contributing
 
-Contributions are welcome!
+Contributions and suggestions are welcome.
 
-1. Fork
-2. `git checkout -b feature/your-feature`
-3. `git commit -m "Add ..."`
-4. `git push origin feature/your-feature`
-5. Open PR
+1. Fork the repository.
+2. Create a feature branch:
 
-### Ideas
-- Add more algorithms (heap sort, quickselect, dijkstra)
-- Add dark mode
-- Improve accessibility (ARIA labels, keyboard nav)
-- Add path highlighting and result summaries
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+3. Make your changes and test them in a browser.
+4. Commit your changes:
+
+   ```bash
+   git commit -m "Add your change"
+   ```
+
+5. Push the branch and open a pull request.
 
 ## 🧪 Testing
 
-No test framework included; manual validation in-browser.
+The project currently uses manual browser testing. When making changes, verify that:
 
-### Quick manual test
-- Open app; verify algorithm selection works
-- Adjust speed and size; verify animation updates
-- Step through algorithms; verify correctness and state
+- Algorithm selection works correctly.
+- Visualizations start, pause, reset, and complete correctly.
+- Input and speed controls behave as expected.
+- Theme switching works correctly.
+- The layout remains usable on mobile and desktop screens.
 
 ## 📄 License
 
-MIT License. See `LICENSE`.
+This project is currently distributed without a repository license file. Add a `LICENSE` file if you would like to publish the project under a specific open-source license.
 
-## 📧 Contact
+## 📬 Repository
 
-- Maintainer: `lochanbr`
-- Repo: https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer
-
-> ⭐ If this project helped you, please star it on GitHub!
-
+[lochanbr/Algovis-interactive-algorithm-visualizer](https://github.com/lochanbr/Algovis-interactive-algorithm-visualizer)
