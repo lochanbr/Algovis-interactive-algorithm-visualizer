@@ -21,6 +21,9 @@
             --shadow-glow: rgba(0, 255, 255, 0.35);
             --button-bg: #222;
             --modal-bg: rgba(0, 0, 0, 0.8);
+            --bg-aurora-one: rgba(0, 255, 255, 0.16);
+            --bg-aurora-two: rgba(156, 39, 176, 0.14);
+            --bg-aurora-three: rgba(255, 213, 79, 0.08);
         }
         
         [data-theme="light"] {
@@ -38,16 +41,55 @@
             --shadow-glow: rgba(25, 118, 210, 0.35);
             --button-bg: #e3f2fd;
             --modal-bg: rgba(255, 255, 255, 0.95);
+            --bg-aurora-one: rgba(25, 118, 210, 0.18);
+            --bg-aurora-two: rgba(126, 87, 194, 0.12);
+            --bg-aurora-three: rgba(255, 193, 7, 0.12);
         }
         
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            background:
+                radial-gradient(circle at 10% 18%, var(--bg-aurora-one), transparent 32%),
+                radial-gradient(circle at 90% 14%, var(--bg-aurora-two), transparent 32%),
+                radial-gradient(circle at 50% 86%, var(--bg-aurora-three), transparent 42%),
+                linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             color: var(--text-primary);
             margin: 0;
             padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+            isolation: isolate;
+        }
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 28vw;
+            height: 28vw;
+            min-width: 220px;
+            min-height: 220px;
+            border-radius: 50%;
+            filter: blur(45px);
+            opacity: 0.28;
+            z-index: -1;
+            pointer-events: none;
+            animation: floatAurora 22s ease-in-out infinite alternate;
+        }
+        body::before {
+            top: -9vw;
+            left: -8vw;
+            background: var(--bg-aurora-one);
+        }
+        body::after {
+            right: -10vw;
+            bottom: -12vw;
+            background: var(--bg-aurora-two);
+            animation-direction: alternate-reverse;
+        }
+        @keyframes floatAurora {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            100% { transform: translate3d(2vw, -2vw, 0) scale(1.08); }
         }
         
         .header {

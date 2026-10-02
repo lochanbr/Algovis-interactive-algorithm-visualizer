@@ -21,6 +21,9 @@
             --shadow-glow: rgba(0, 255, 255, 0.35);
             --button-bg: #222;
             --modal-bg: rgba(0, 0, 0, 0.8);
+            --bg-aurora-one: rgba(0, 255, 255, 0.2);
+            --bg-aurora-two: rgba(156, 39, 176, 0.18);
+            --bg-aurora-three: rgba(33, 150, 243, 0.16);
         }
         
         [data-theme="light"] {
@@ -38,6 +41,9 @@
             --shadow-glow: rgba(25, 118, 210, 0.35);
             --button-bg: #e3f2fd;
             --modal-bg: rgba(255, 255, 255, 0.95);
+            --bg-aurora-one: rgba(25, 118, 210, 0.2);
+            --bg-aurora-two: rgba(126, 87, 194, 0.14);
+            --bg-aurora-three: rgba(100, 181, 246, 0.16);
         }
         
         body {
@@ -45,11 +51,48 @@
             flex-direction: column;
             align-items: center;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg-primary);
+            background:
+                radial-gradient(circle at 12% 18%, var(--bg-aurora-one), transparent 34%),
+                radial-gradient(circle at 82% 14%, var(--bg-aurora-two), transparent 36%),
+                radial-gradient(circle at 50% 84%, var(--bg-aurora-three), transparent 42%),
+                linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
             color: var(--text-primary);
             margin: 0;
             padding: 20px;
             cursor: auto;
+            min-height: 100vh;
+            position: relative;
+            isolation: isolate;
+        }
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 32vw;
+            height: 32vw;
+            min-width: 240px;
+            min-height: 240px;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            animation: floatAurora 20s ease-in-out infinite alternate;
+        }
+        body::before {
+            top: -8vw;
+            left: -6vw;
+            background: var(--bg-aurora-one);
+        }
+        body::after {
+            right: -8vw;
+            bottom: -10vw;
+            background: var(--bg-aurora-two);
+            animation-direction: alternate-reverse;
+        }
+        @keyframes floatAurora {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            100% { transform: translate3d(3vw, -2vw, 0) scale(1.08); }
         }
         .logo {
             position: absolute;
